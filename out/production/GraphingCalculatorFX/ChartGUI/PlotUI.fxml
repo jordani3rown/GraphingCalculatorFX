@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChartGUI.PlotUIController">
+   <children>
+      <LineChart layoutX="106.0" layoutY="1.0" prefHeight="400.0" prefWidth="494.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis lowerBound="-10.0" minorTickLength="1.0" side="LEFT" tickLength="1.0" tickUnit="1.0" />
+        </yAxis>
+      </LineChart>
+      <Accordion layoutY="22.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="372.0" prefWidth="119.0">
+        <panes>
+          <TitledPane animated="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="351.0" prefWidth="132.0">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </TitledPane>
+        </panes>
+      </Accordion>
+      <Label layoutX="5.0" layoutY="6.0" text="Enter function below" />
+   </children>
+</AnchorPane>

@@ -36,7 +36,13 @@ public class Main extends Application {
     Button addButton;
 
     /** Pane used to hold the javafx implementation of the calculator */
-    GridPane calcPane;
+    VBox containerCalc;
+
+    GridPane calcButtonPane;
+
+    TextArea expressionInput;
+
+    RowConstraints textAreaHeight;
 
     /** Current Count of UserExpressions */
     int expressionCount;
@@ -48,10 +54,7 @@ public class Main extends Application {
     Calculator calculator;
 
     /** Array of buttons to be used for the calculator buttons in the JavaFX implementation */
-    private Button calcButtons[], butSquare, butExp, butClear, butSqrt, butRt,
-            butLog, butLN, butDivide, butCos, butSin, butTan, butOpenParen, butCloseParen,
-            butDel, butPi, butExe, butAdd, butMinus, butMultiply, butDot, butEX, butVar, butGraph,
-            butUndo, butAns, butComma;
+    private Button calcButtons[];
 
 
     public static void main(String[] args) {
@@ -126,6 +129,7 @@ public class Main extends Application {
             /*
             Section to be used for the JavaFX implementation of the calculator
              */
+            /*
             // GridPane to hold the calculator buttons
             calcPane = new GridPane();
             //setupCalcButtons();
@@ -134,18 +138,12 @@ public class Main extends Application {
             RowConstraints ccCalcCol = new RowConstraints();
             ccCalcCol.setPercentHeight(10); // 10% of the height of the pane for each column of the calculator buttons
 
-
-            TextArea expressionInput = new TextArea();
-            expressionInput.setMaxHeight(Double.MAX_VALUE);
-            RowConstraints textAreaHeight = new RowConstraints();
-            textAreaHeight.setPercentHeight(30);
-            calcPane.add(expressionInput, 0, 0);
-
             //addButtonsToGrid();
             calcPane.getRowConstraints().addAll(textAreaHeight, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol);;
             //calcPane.getColumnConstraints().addAll(ccCalcRow);
+            */
 
-
+            setupCalculator();
 
             // BorderPane top section for calculator and graphing tabs
             // Button used to switch to the Calculator node
@@ -310,7 +308,7 @@ public class Main extends Application {
                 public void handle(MouseEvent mouseEvent) {
                     // Create a new expression when the mouse is clicked
                     layout.setCenter(null);
-                    layout.setCenter(calcPane);
+                    layout.setCenter(containerCalc);
 
                     // SwingNode used previously to add embed the swing calculator inside the BorderPane
                     // Buttons would not display properly due to a conflict with the GridBagLayout used
@@ -441,13 +439,40 @@ public class Main extends Application {
     */
 
     /*****************************************************************
-     Function to add the calculator buttons to the calculator GridPane
+     Creates and sets the content of the SwingNode for the javafx calculator
      *****************************************************************/
-    /*
-    public void setupCalcButtons() {
+    public void setupCalculator() {
+        containerCalc = new VBox();
+        containerCalc.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        containerCalc.prefWidthProperty().bind(layout.widthProperty().multiply(1.0));
+        containerCalc.prefHeightProperty().bind(layout.heightProperty().multiply(1.0));
+        containerCalc.setFillWidth(true);
+        containerCalc.setSpacing(5.0);
+        containerCalc.setPadding(new Insets(5,5,5,5));
+
+        // Create expression input text area
+        expressionInput = new TextArea();
+        expressionInput.setMaxHeight(Double.MAX_VALUE);
+
+        // Setup calculator buttons
+        createCalcButtons();
+        setupCalcButtons();
+
+        // Add the components to the container
+        containerCalc.getChildren().add(expressionInput);
+        containerCalc.getChildren().add(calcButtonPane);
+        // Set the components to vertically expand with a given priority
+        containerCalc.setVgrow(expressionInput, Priority.SOMETIMES);
+        containerCalc.setVgrow(calcButtonPane, Priority.ALWAYS);
+    }
+
+    /*****************************************************************
+     Creates and labels the calculator buttons
+     *****************************************************************/
+    public void createCalcButtons() {
         Button butSquare = new Button("^2");
         Button butExp = new Button("^");
-        Button butSqrt= new Button("√");
+        Button butSqrt = new Button("√");
         Button butRt = new Button("∛");
         Button butEX = new Button("e^x");
         Button butLog = new Button("Log");
@@ -458,69 +483,79 @@ public class Main extends Application {
         Button butOpenParen = new Button("(");
         Button butCloseParen = new Button(")");
         Button butVar = new Button("X");
-        Button butGraph = new Button("Graph");
+        //Button butGraph = new Button("Graph");
         Button butDel = new Button("Del");
         Button butClear = new Button("Clear");
+        Button butSeven = new Button("7");
+        Button butEight = new Button("8");
+        Button butNine = new Button("9");
         Button butMultiply = new Button("*");
         Button butDivide = new Button("/");
+        Button butFour = new Button("4");
+        Button butFive = new Button("5");
+        Button butSix = new Button("6");
         Button butAdd = new Button("+");
-        Button butMinus = new Button("-");
-        Button butDot = new Button(".");
+        Button butSubtract = new Button("-");
+        Button butOne = new Button("1");
+        Button butTwo = new Button("2");
+        Button butThree = new Button("3");
         Button butComma = new Button(",");
         Button butExe = new Button("EXE");
+        Button butZero = new Button("0");
+        Button butDot = new Button(".");
         Button butPi = new Button("π");
         Button butUndo = new Button("Undo");
         Button butAns = new Button("Answer");
 
-        int[] numCols = new int[8];
-        numCols[0] = 5;
-        numCols[1] = 5;
-        numCols[2] = 4;
-        numCols[3] = 5;
-        numCols[4] = 5;
-        numCols[5] = 5;
-        numCols[6] = 5;
-        numCols[7] = 2;
-        int count = 0;
-
-        for(int row = 1;row < 9; row++) {
-            for(int col = 0; col < numCols[row - 1]; col++) {
-                calcButtons[count].setMaxWidth(Double.MAX_VALUE);
-                calcPane.add(calcButtons[count], col, row);
-                count++;
-            }
-        }
+        //calcButtons = new Button[25];
+        calcButtons = new Button[]{butSquare, butExp, butSqrt, butRt, butEX, butLog, butLN,
+            butCos, butSin, butTan, butOpenParen, butCloseParen, butVar, butDel, butClear,
+            butSeven, butEight, butNine, butMultiply, butDivide, butFour, butFive, butSix,
+            butAdd, butSubtract, butOne, butTwo, butThree, butPi, butExe, butZero, butDot, butComma, butUndo, butAns};
     }
 
+    /*****************************************************************
+     Function to add the calculator buttons to the Calculator Pane
+     *****************************************************************/
+    public void setupCalcButtons() {
+        // Setup the gridpane
+        calcButtonPane = new GridPane();
+        calcButtonPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        calcButtonPane.setHgap(2.0);
+        calcButtonPane.setVgap(2.0);
+        calcButtonPane.setGridLinesVisible(true);
 
-    public void addButtonsToGrid() {
+        // Set the width of the columns
+        ColumnConstraints colWidth = new ColumnConstraints();
+        colWidth.setHgrow(Priority.ALWAYS);
+        colWidth.setPercentWidth(20);
+        calcButtonPane.setMaxHeight(Double.MAX_VALUE);
 
-        // calcButtons array is an array of Buttons ranging 0-25
-        // numCols array is the number of columns per row of the calculator
-        // calcPane is a GridPane
-        // When adding a node to a GridPane, you specify the Node followed by the location (col, row)
-        // count is used to increment through the calcButtons array
+        // Add the column constraints to the gridpane
+        calcButtonPane.getColumnConstraints().addAll(colWidth, colWidth, colWidth, colWidth, colWidth);
 
-        int[] numCols = new int[8];
-        numCols[0] = 5;
-        numCols[1] = 5;
-        numCols[2] = 4;
-        numCols[3] = 5;
-        numCols[4] = 5;
-        numCols[5] = 5;
-        numCols[6] = 5;
-        numCols[7] = 2;
-        int count = 0;
+        // Variables to track the current row / column
+        int col;
+        int row;
 
-        for(int row = 1;row < 9; row++) {
-            for(int col = 0; col < numCols[row - 1]; col++) {
-                calcButtons[count].setMaxWidth(Double.MAX_VALUE);
-                calcPane.add(calcButtons[count], col, row);
-                count++;
-            }
+        for(int bElement = 0; bElement < calcButtons.length; bElement++) {
+            row = bElement / 5;
+            col = bElement % 5;
+
+            calcButtons[bElement].setId("calc-button");
+            calcButtons[bElement].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+            calcButtonPane.add(calcButtons[bElement], col, row);
+            calcButtonPane.setVgrow(calcButtons[bElement], Priority.ALWAYS);
+            Button currentButton = calcButtons[bElement];
+
+            currentButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    expressionInput.appendText(currentButton.getText());
+                }
+            });
         }
-    }
-    */
 
+    }
 
 }

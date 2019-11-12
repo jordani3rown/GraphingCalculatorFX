@@ -1,4 +1,5 @@
 package ChartGUI;
+import org.mariuszgromada.math.mxparser.*;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -16,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.control.TextArea;
+
 
 
 public class Main extends Application {
@@ -54,7 +56,54 @@ public class Main extends Application {
     Calculator calculator;
 
     /** Array of buttons to be used for the calculator buttons in the JavaFX implementation */
-    private Button calcButtons[];
+    private Button[] calcButtons;
+
+    /** Button objects */
+    /*
+    private Button butSquare, butExp, butSqrt, butRt, butEX, butLog, butLN,
+            butCos, butSin, butTan, butOpenParen, butCloseParen, butVar, butDel, butClear,
+            butSeven, butEight, butNine, butMultiply, butDivide, butFour, butFive, butSix,
+            butAdd, butSubtract, butOne, butTwo, butThree, butPi, butExe, butZero, butDot, butComma, butUndo, butAns;
+    */
+    Button butSquare;
+    Button butExp;
+    Button butSqrt;
+    Button butRt;
+    Button butEX;
+    Button butLog;
+    Button butLN;
+    Button butSin;
+    Button butCos;
+    Button butTan;
+    Button butOpenParen;
+    Button butCloseParen;
+    Button butVar;
+    //Button butGraph = new Button("Graph");
+    Button butDel;
+    Button butClear;
+    Button butSeven;
+    Button butEight;
+    Button butNine;
+    Button butMultiply;
+    Button butDivide;
+    Button butFour;
+    Button butFive;
+    Button butSix;
+    Button butAdd;
+    Button butSubtract;
+    Button butOne;
+    Button butTwo;
+    Button butThree;
+    Button butComma;
+    Button butExe;
+    Button butZero;
+    Button butDot;
+    Button butPi;
+    Button butUndo;
+    Button butAns;
+
+    calc backEnd;
+    String userInput;
 
 
     public static void main(String[] args) {
@@ -66,6 +115,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         // Wrap method inside try-catch block
         try {
+            calcButtons = createCalcButtons();
+
+            backEnd = new calc();
+
             // Initialize the BorderPane
             layout = new BorderPane();
 
@@ -118,31 +171,6 @@ public class Main extends Application {
             });
             // Create the first UserExpression with an empty TextField
             createExpression();
-
-            // Previously used containers for the swing version of the calculator
-            //HBox calcBox = new HBox();
-            // Create a new Calculator object
-            //calculator = new Calculator();
-            //calcBox.getChildren().add(calculator);
-
-
-            /*
-            Section to be used for the JavaFX implementation of the calculator
-             */
-            /*
-            // GridPane to hold the calculator buttons
-            calcPane = new GridPane();
-            //setupCalcButtons();
-            ColumnConstraints ccCalcRow = new ColumnConstraints();
-            ccCalcRow.setPercentWidth(100);
-            RowConstraints ccCalcCol = new RowConstraints();
-            ccCalcCol.setPercentHeight(10); // 10% of the height of the pane for each column of the calculator buttons
-
-            //addButtonsToGrid();
-            calcPane.getRowConstraints().addAll(textAreaHeight, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol, ccCalcCol);;
-            //calcPane.getColumnConstraints().addAll(ccCalcRow);
-            */
-
             setupCalculator();
 
             // BorderPane top section for calculator and graphing tabs
@@ -310,23 +338,6 @@ public class Main extends Application {
                     layout.setCenter(null);
                     layout.setCenter(containerCalc);
 
-                    // SwingNode used previously to add embed the swing calculator inside the BorderPane
-                    // Buttons would not display properly due to a conflict with the GridBagLayout used
-                    // Could potentially be implemented with CardLayout
-                    /*
-                    final SwingNode calcNode = new SwingNode();
-                    //CardLayout cLayout = new CardLayout();
-                    //cLayout.next();
-
-                    createAndSetSwingContent(calcNode);
-                    calculator.initialize();
-                    //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    calcBox.getChildren().add(calcNode);
-
-                    layout.setCenter(calcBox);
-                    calcNode.requestFocus();
-                     */
-
                 }
             });
 
@@ -425,20 +436,6 @@ public class Main extends Application {
 
 
     /*****************************************************************
-     Creates and sets the content of the SwingNode for the swing calculator
-     *****************************************************************/
-    /*
-    public void createAndSetSwingContent(final SwingNode calcNode) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                calcNode.setContent(calculator.cardPanel);
-            }
-        });
-    }
-    */
-
-    /*****************************************************************
      Creates and sets the content of the SwingNode for the javafx calculator
      *****************************************************************/
     public void setupCalculator() {
@@ -452,10 +449,11 @@ public class Main extends Application {
 
         // Create expression input text area
         expressionInput = new TextArea();
+        //expressionInput.setStyle("-fx-background-color: ECECEC;");
         expressionInput.setMaxHeight(Double.MAX_VALUE);
 
         // Setup calculator buttons
-        createCalcButtons();
+        this.calcButtons = createCalcButtons();
         setupCalcButtons();
 
         // Add the components to the container
@@ -469,49 +467,67 @@ public class Main extends Application {
     /*****************************************************************
      Creates and labels the calculator buttons
      *****************************************************************/
-    public void createCalcButtons() {
-        Button butSquare = new Button("^2");
-        Button butExp = new Button("^");
-        Button butSqrt = new Button("√");
-        Button butRt = new Button("∛");
-        Button butEX = new Button("e^x");
-        Button butLog = new Button("Log");
-        Button butLN = new Button("LN");
-        Button butSin = new Button("Sin");
-        Button butCos = new Button("Cos");
-        Button butTan = new Button("Tan");
-        Button butOpenParen = new Button("(");
-        Button butCloseParen = new Button(")");
-        Button butVar = new Button("X");
+    public Button[] createCalcButtons() {
+        butSquare = new Button("^2");
+        butExp = new Button("^");
+        butSqrt = new Button("√");
+        butRt = new Button("∛");
+        butEX = new Button("e^x");
+        butLog = new Button("Log");
+        butLN = new Button("LN");
+        butSin = new Button("Sin");
+        butCos = new Button("Cos");
+        butTan = new Button("Tan");
+        butOpenParen = new Button("(");
+        butCloseParen = new Button(")");
+        butVar = new Button("X");
         //Button butGraph = new Button("Graph");
-        Button butDel = new Button("Del");
-        Button butClear = new Button("Clear");
-        Button butSeven = new Button("7");
-        Button butEight = new Button("8");
-        Button butNine = new Button("9");
-        Button butMultiply = new Button("*");
-        Button butDivide = new Button("/");
-        Button butFour = new Button("4");
-        Button butFive = new Button("5");
-        Button butSix = new Button("6");
-        Button butAdd = new Button("+");
-        Button butSubtract = new Button("-");
-        Button butOne = new Button("1");
-        Button butTwo = new Button("2");
-        Button butThree = new Button("3");
-        Button butComma = new Button(",");
-        Button butExe = new Button("EXE");
-        Button butZero = new Button("0");
-        Button butDot = new Button(".");
-        Button butPi = new Button("π");
-        Button butUndo = new Button("Undo");
-        Button butAns = new Button("Answer");
+        butDel = new Button("Del");
+        butClear = new Button("Clear");
+        butSeven = new Button("7");
+        butEight = new Button("8");
+        butNine = new Button("9");
+        butMultiply = new Button("*");
+        butDivide = new Button("/");
+        butFour = new Button("4");
+        butFive = new Button("5");
+        butSix = new Button("6");
+        butAdd = new Button("+");
+        butSubtract = new Button("-");
+        butOne = new Button("1");
+        butTwo = new Button("2");
+        butThree = new Button("3");
+        butComma = new Button(",");
+        butExe = new Button("EXE");
+        butZero = new Button("0");
+        butDot = new Button(".");
+        butPi = new Button("π");
+        butUndo = new Button("Undo");
+        butAns = new Button("Answer");
 
-        //calcButtons = new Button[25];
         calcButtons = new Button[]{butSquare, butExp, butSqrt, butRt, butEX, butLog, butLN,
-            butCos, butSin, butTan, butOpenParen, butCloseParen, butVar, butDel, butClear,
-            butSeven, butEight, butNine, butMultiply, butDivide, butFour, butFive, butSix,
-            butAdd, butSubtract, butOne, butTwo, butThree, butPi, butExe, butZero, butDot, butComma, butUndo, butAns};
+                butCos, butSin, butTan, butOpenParen, butCloseParen, butVar, butDel, butClear,
+                butSeven, butEight, butNine, butMultiply, butDivide, butFour, butFive, butSix,
+                butAdd, butSubtract, butOne, butTwo, butThree, butPi, butExe, butZero, butDot, butComma, butUndo, butAns};
+
+        return calcButtons;
+
+    }
+
+
+    public String displayExpression() {
+        userInput = backEnd.getExpression();
+
+        if (userInput.contains("pi")) {
+            userInput = userInput.replaceAll("pi", "π");
+        }
+        if(userInput.contains("sqrt")){
+            userInput = userInput.replaceAll("sqrt", "√");
+        }
+        if(userInput.contains("cbrt")){
+            userInput = userInput.replaceAll("cbrt", "∛");
+        }
+        return userInput;
     }
 
     /*****************************************************************
@@ -538,6 +554,7 @@ public class Main extends Application {
         int col;
         int row;
 
+
         for(int bElement = 0; bElement < calcButtons.length; bElement++) {
             row = bElement / 5;
             col = bElement % 5;
@@ -551,7 +568,158 @@ public class Main extends Application {
             currentButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
-                    expressionInput.appendText(currentButton.getText());
+
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error in Expression");
+                    Button source = currentButton;
+
+
+                    if(source == butOne || source == butTwo || source == butThree || source == butFour || source == butFive || source == butSix || source == butSeven || source == butEight || source == butNine || source == butZero) {
+                        backEnd.addToExpression("" + source.getText());
+                    }
+
+                    if (source == butSquare) {
+                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))){
+                            alert.setHeaderText("Error in Squaring Operation");
+                            alert.setContentText("Cannot square a non-number!");
+                            alert.showAndWait();
+                            return;
+                        }
+                        backEnd.addToExpression("^2");
+                    }
+
+                    if (source == butExp) {
+                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                            alert.setHeaderText("Error Applying Exponent");
+                            alert.setContentText("Cannot exponentiate a non-number!");
+                            alert.showAndWait();
+                            return;
+                        }
+                        backEnd.addToExpression("^");
+                    }
+
+                    if (source == butClear) {
+                        backEnd.clear();
+                    }
+
+                    if (source == butSqrt) {
+                        backEnd.addToExpression("sqrt(");
+                    }
+
+                    if (source == butRt) {
+                        backEnd.addToExpression("cbrt(");
+                    }
+
+                    if (source == butLog) {
+                        backEnd.addToExpression("log(10,");
+                    }
+
+                    if (source == butLN) {
+                        backEnd.addToExpression("ln");
+                    }
+
+                    if (source == butSin) {
+                        backEnd.addToExpression("sin(");
+                    }
+
+                    if (source == butCos) {
+                        backEnd.addToExpression("cos(");
+                    }
+
+                    if (source == butTan) {
+                        backEnd.addToExpression("tan(");
+                    }
+
+                    if (source == butDivide) {
+                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                            alert.setHeaderText("Error in Division Operation");
+                            alert.setContentText("Syntax: Number must precede division symbol");
+                            alert.showAndWait();
+                            return;
+                        }
+                        backEnd.addToExpression("/");
+                    }
+
+                    if (source == butAdd) {
+                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                            alert.setHeaderText("Error in Addition Operation");
+                            alert.setContentText("Syntax: Number must precede addition symbol");
+                            alert.showAndWait();
+                            return;
+                        }
+                        backEnd.addToExpression("+");
+                    }
+
+                    if (source == butSubtract) {
+                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                            alert.setHeaderText("Error in Subtraction Operation");
+                            alert.setContentText("Syntax: Number must precede minus symbol");
+                            alert.showAndWait();
+                            return;
+                        }
+                        backEnd.addToExpression("-");
+                    }
+
+                    if(source == butMultiply){
+                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                            alert.setHeaderText("Error in Multiplication Operation");
+                            alert.setContentText("Syntax: Number must precede multiplication symbol");
+                            alert.showAndWait();
+                            return;
+                        }
+                        backEnd.addToExpression("*");
+                    }
+
+                    if (source == butExe) {
+                        double result = backEnd.evaluate();
+                        backEnd.clear();
+                        backEnd.addToExpression(""+result);
+                    }
+
+                    if(source == butEX){
+                        backEnd.addToExpression("e^");
+                    }
+
+                    if(source == butDot){
+                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                            alert.setHeaderText("Error in Dot Operation");
+                            alert.setContentText("Syntax: Number must precede a dot");
+                            alert.showAndWait();
+                            return;
+                        }
+                        backEnd.addToExpression(".");
+                    }
+                    if(source == butOpenParen){
+                        backEnd.addToExpression("(");
+                    }
+
+                    if(source == butCloseParen){
+                        backEnd.addToExpression(")");
+                    }
+
+                    if(source == butDel){
+                        backEnd.del();
+                    }
+
+                    if(source == butPi){
+                        backEnd.addToExpression("pi");
+                    }
+
+                    if(source == butComma){
+                        backEnd.addToExpression(",");
+                    }
+
+                    if(source == butUndo){
+                        backEnd.clear();
+                        backEnd.addToExpression(backEnd.getPrevInput());
+                    }
+
+                    if(source == butAns){
+                        backEnd.addToExpression(""+backEnd.getPrevResult());
+                    }
+                    // need to clear before appending the updated expression
+                    expressionInput.clear();
+                    expressionInput.appendText(displayExpression());
                 }
             });
         }

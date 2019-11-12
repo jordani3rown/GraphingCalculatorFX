@@ -59,12 +59,6 @@ public class Main extends Application {
     private Button[] calcButtons;
 
     /** Button objects */
-    /*
-    private Button butSquare, butExp, butSqrt, butRt, butEX, butLog, butLN,
-            butCos, butSin, butTan, butOpenParen, butCloseParen, butVar, butDel, butClear,
-            butSeven, butEight, butNine, butMultiply, butDivide, butFour, butFive, butSix,
-            butAdd, butSubtract, butOne, butTwo, butThree, butPi, butExe, butZero, butDot, butComma, butUndo, butAns;
-    */
     Button butSquare;
     Button butExp;
     Button butSqrt;
@@ -78,7 +72,6 @@ public class Main extends Application {
     Button butOpenParen;
     Button butCloseParen;
     Button butVar;
-    //Button butGraph = new Button("Graph");
     Button butDel;
     Button butClear;
     Button butSeven;
@@ -689,6 +682,7 @@ public class Main extends Application {
                         }
                         backEnd.addToExpression(".");
                     }
+                    
                     if(source == butOpenParen){
                         backEnd.addToExpression("(");
                     }

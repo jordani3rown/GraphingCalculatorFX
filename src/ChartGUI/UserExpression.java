@@ -53,4 +53,8 @@ public class UserExpression {
         return expression;
     }
 
+    public void setExpressionSeries(XYChart.Series series) {
+        this.expressionSeries = series;
+    }
+
 }

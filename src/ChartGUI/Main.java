@@ -463,6 +463,8 @@ public class Main extends Application {
         }
         // Add the data to the lineChart
         lineChart.getData().add(series);
+        // Add the series to the UserExpression object 'newExpression'
+        newExpression.setExpressionSeries(series);
 
         //series.setName("Series Name");
 
@@ -511,7 +513,8 @@ public class Main extends Application {
                 // variable representing the updated string in the text field
                 newExpression.setExpression(newInput);
                 if(newInput != oldInput) {
-                    lineChart.getData().clear();
+                    // Remove the series of the current expression from the lineChart
+                    lineChart.getData().removeAll(newExpression.expressionSeries);
                 }
             }
         });

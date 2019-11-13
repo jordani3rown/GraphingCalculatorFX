@@ -1,4 +1,9 @@
 package ChartGUI;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.mariuszgromada.math.mxparser.*;
 
 import javafx.application.Application;
@@ -18,6 +23,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.control.TextArea;
 
+import java.util.ArrayList;
 
 
 public class Main extends Application {
@@ -29,6 +35,7 @@ public class Main extends Application {
     /** Accordion to hold the user added expressions */
     Accordion functionMenu;
 
+    /**  */
     TitledPane functionPane;
 
     /** GridPane to hold user expressionID's and expressionInput fields */
@@ -40,6 +47,7 @@ public class Main extends Application {
     /** Pane used to hold the javafx implementation of the calculator */
     VBox containerCalc;
 
+    /**  */
     GridPane calcButtonPane;
 
     TextArea expressionInput;
@@ -50,10 +58,10 @@ public class Main extends Application {
     int expressionCount;
 
     /** UserExpression object */
-    UserExpression[] addedExpressions;
+    ArrayList<UserExpression> addedExpressions;
 
     /** Calculator object that held the swing calculator */
-    Calculator calculator;
+    //Calculator calculator;
 
     /** Array of buttons to be used for the calculator buttons in the JavaFX implementation */
     private Button[] calcButtons;
@@ -88,7 +96,7 @@ public class Main extends Application {
     Button butTwo;
     Button butThree;
     Button butComma;
-    Button butExe;
+    Button butEquals;
     Button butZero;
     Button butDot;
     Button butPi;
@@ -97,6 +105,9 @@ public class Main extends Application {
 
     calc backEnd;
     String userInput;
+
+    Graph example;
+    LineChart<Number, Number> lineChart;
 
 
     public static void main(String[] args) {
@@ -108,6 +119,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         // Wrap method inside try-catch block
         try {
+            addedExpressions = new ArrayList<UserExpression>();
+
             calcButtons = createCalcButtons();
 
             backEnd = new calc();
@@ -288,7 +301,7 @@ public class Main extends Application {
             // Set the location of the chart in the BorderPane
             layout.setCenter(lineChart);
             // Plot the data on the chart
-            plotData(lineChart);
+            //plotData(lineChart);
 
             // Create a table of the data
             TableView dataTable = new TableView();
@@ -302,7 +315,7 @@ public class Main extends Application {
                             graphTableButton.setText("Table");
                         }
                         else {
-                            layout.setCenter(dataTable);
+                            //layout.setCenter(dataTable);
                             graphTableButton.setText("Graph");
                         }
                     }
@@ -322,18 +335,45 @@ public class Main extends Application {
             });
 
 
-            // Create event handler for MouseEvent.MOUSE_CLICK
-
+            // Create event handler for the calculator button in the top pane MouseEvent.MOUSE_CLICK
             calcButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     // Create a new expression when the mouse is clicked
                     layout.setCenter(null);
                     layout.setCenter(containerCalc);
+                    /*
+                    if(layout.getCenter() == lineChart) {
+                        if(calcButton.getText() != "Calculator" && graphTableButton.getText() != "Graph") {
+
+                            graphTableButton.setText("Calculator");
+                        }
+                        else if(calcButton.getText() == "Calculator" && graphTableButton.getText() == "Table") {
+                            graphTableButton.setText("Graph");
+                        }
+
+                        }
+                        else {
+                            layout.setCenter(dataTable);
+                            graphTableButton.setText("Graph");
+                        }
+                    }
+                    else if (layout.getCenter() == dataTable) {
+                        if(graphTableButton.getText() != "Graph") {
+                            graphTableButton.setText("Graph");
+                        }
+                        else {
+                            layout.setCenter(lineChart);
+                            graphTableButton.setText("Table");
+                        }
+                    }
+                    else {
+                        return;
+                    }
+                     */
 
                 }
             });
-
 
             // Set the scene of the stage
             primaryStage.setScene(scene);
@@ -354,7 +394,7 @@ public class Main extends Application {
      *****************************************************************/
     public LineChart<Number, Number> createLineChart() {
         // Create a new Graph object
-        Graph example = new Graph();
+        example = new Graph();
 
         //defining the axes
         //final NumberAxis xAxis = new NumberAxis(-10, 10, 1);
@@ -370,7 +410,8 @@ public class Main extends Application {
         //xAxis.setLabel("Number of Month");
 
         //creating the chart
-        final LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+        //final LineChart<Number, Number> lineChart
+        lineChart = new LineChart<Number, Number>(xAxis, yAxis);
 
         // setting the chart title
         //lineChart.setTitle("");
@@ -384,17 +425,58 @@ public class Main extends Application {
     /*****************************************************************
      Method that plots the data points on the lineChart
      *****************************************************************/
-    public void plotData(LineChart lineChart) {
-        //defining a series
+    public void plotData(UserExpression newExpression) {
+        //ObservableList<XYChart.Data> sList = expressionSeries.dataProperty();
+
         XYChart.Series series = new XYChart.Series();
+        String newInput = newExpression.expression;
+        calc expressionBackend = new calc();
+        int xMax = (int)example.getXMax();
+        String tmpInput = newInput;
+
+        for(int x = (int)example.getXMin(); x < xMax; x++ ) {
+
+            // Parse the expression, and set the tmpInput to use the current x value instead of the variable x
+            if (newInput.contains("x")) {
+                int index = newInput.indexOf('x');
+                //System.out.println("x index: " + index);
+                //System.out.println("Char at index - 1 " +newInput.charAt(index - 1));
+                if(index >= 0 && Character.isDigit(index - 1)) {
+                    tmpInput = newInput.replaceAll("x", "*" + x);
+                }
+                else {
+                    tmpInput = newInput.replaceAll("x", "" + x);
+                }
+                //System.out.println("Replaced text: " +newInput);
+            } else if (newInput.contains("X")) {
+                tmpInput = newInput.replaceAll("X", ""+x);
+                //System.out.println("Replaced text: " +newInput);
+            }
+
+            // Add the expression to the parser and evaluate the y value from the current value of x
+            expressionBackend.addToExpression(tmpInput);
+            double y = expressionBackend.evaluate();
+
+            // Output representing the x and y values for the current expression
+            System.out.println("x = " + x);
+            System.out.println("y = " +y);
+
+            // Add the data point to the series
+            series.getData().add(new XYChart.Data<>(x, y));
+            // Print the tmpInput expression
+            System.out.println("Expression: " +tmpInput);
+            // Clear the expression for the next iteration of x
+            expressionBackend.clear();
+        }
+        // Add the data to the lineChart
+        lineChart.getData().add(series);
 
         //series.setName("Series Name");
 
         //populating the series with data
-        series.getData().add(new XYChart.Data(0, 2));
-        series.getData().add(new XYChart.Data(1, 4));
+        //series.getData().add(new XYChart.Data(0, 2));
+        //series.getData().add(new XYChart.Data(1, 4));
 
-        lineChart.getData().add(series);
     }
 
     /*****************************************************************
@@ -413,9 +495,6 @@ public class Main extends Application {
         // Create the text field that will take in the user input
         TextField userInput = new TextField();
 
-        // Create a new UserExpression on the MouseEvent
-        UserExpression newExpression = new UserExpression(expressionCount, null);
-
         // Set the prompt text for the user
         userInput.setPromptText("Enter Expression Here");
 
@@ -425,6 +504,30 @@ public class Main extends Application {
 
         // Shift the location of the addButton below the most recently created UserExpression
         userExpressions.setRowIndex(addButton, expressionCount + 1);
+
+        // Create a new UserExpression on the MouseEvent
+        UserExpression newExpression = new UserExpression(expressionCount, null);
+        //UserExpression newExpression = new UserExpression(expressionCount, userInput.getText());
+
+        addedExpressions.add(newExpression);
+
+
+        userInput.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String oldInput, String newInput) {
+                // variable representing the updated string in the text field
+                newExpression.setExpression(newInput);
+            }
+        });
+
+        userInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if(keyEvent.getCode().equals(KeyCode.ENTER)) {
+                    plotData(newExpression);
+                }
+            }
+        });
     }
 
 
@@ -491,7 +594,7 @@ public class Main extends Application {
         butTwo = new Button("2");
         butThree = new Button("3");
         butComma = new Button(",");
-        butExe = new Button("EXE");
+        butEquals = new Button("=");
         butZero = new Button("0");
         butDot = new Button(".");
         butPi = new Button("π");
@@ -501,7 +604,7 @@ public class Main extends Application {
         calcButtons = new Button[]{butSquare, butExp, butSqrt, butRt, butEX, butLog, butLN,
                 butCos, butSin, butTan, butOpenParen, butCloseParen, butVar, butDel, butClear,
                 butSeven, butEight, butNine, butMultiply, butDivide, butFour, butFive, butSix,
-                butAdd, butSubtract, butOne, butTwo, butThree, butPi, butExe, butZero, butDot, butComma, butUndo, butAns};
+                butAdd, butSubtract, butOne, butTwo, butThree, butPi, butEquals, butZero, butDot, butComma, butUndo, butAns};
 
         return calcButtons;
 
@@ -663,7 +766,7 @@ public class Main extends Application {
                         backEnd.addToExpression("*");
                     }
 
-                    if (source == butExe) {
+                    if (source == butEquals) {
                         double result = backEnd.evaluate();
                         backEnd.clear();
                         backEnd.addToExpression(""+result);
@@ -682,7 +785,7 @@ public class Main extends Application {
                         }
                         backEnd.addToExpression(".");
                     }
-                    
+
                     if(source == butOpenParen){
                         backEnd.addToExpression("(");
                     }

@@ -438,19 +438,12 @@ public class Main extends Application {
 
             // Parse the expression, and set the tmpInput to use the current x value instead of the variable x
             if (newInput.contains("x")) {
-                int index = newInput.indexOf('x');
-                //System.out.println("x index: " + index);
-                //System.out.println("Char at index - 1 " +newInput.charAt(index - 1));
-                if(index >= 0 && Character.isDigit(index - 1)) {
+                if(newInput.indexOf('x') > 0 && Character.isDigit(newInput.charAt(newInput.indexOf('x') - 1))) {
                     tmpInput = newInput.replaceAll("x", "*" + x);
                 }
-                else {
+                else if(newInput.indexOf('x') == 0) {
                     tmpInput = newInput.replaceAll("x", "" + x);
                 }
-                //System.out.println("Replaced text: " +newInput);
-            } else if (newInput.contains("X")) {
-                tmpInput = newInput.replaceAll("X", ""+x);
-                //System.out.println("Replaced text: " +newInput);
             }
 
             // Add the expression to the parser and evaluate the y value from the current value of x

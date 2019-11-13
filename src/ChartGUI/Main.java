@@ -510,6 +510,9 @@ public class Main extends Application {
             public void changed(ObservableValue<? extends String> observableValue, String oldInput, String newInput) {
                 // variable representing the updated string in the text field
                 newExpression.setExpression(newInput);
+                if(newInput != oldInput) {
+                    lineChart.getData().clear();
+                }
             }
         });
 

@@ -2,8 +2,6 @@ package ChartGUI;
 
 import org.mariuszgromada.math.mxparser.*;
 
-import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class calc {
@@ -26,11 +24,48 @@ public class calc {
         return result;
     }
 
-    public double solveEquation(){
-        return 0;
-    }
-
     public void addToExpression(String in){
+        if(in.equals("+")) {
+            if (expression.length() == 0 || !Character.isDigit(expression.charAt(expression.length() - 1)) || expression.length() == 0) {
+                throw new IllegalArgumentException();
+            }
+        }
+        if(in.equals("-")) {
+            if (expression.length() == 0 || !Character.isDigit(expression.charAt(expression.length() - 1)) || expression.length() == 0) {
+                throw new IllegalArgumentException();
+            }
+        }
+        if(in.equals("/")) {
+            if (expression.length() == 0 || !Character.isDigit(expression.charAt(expression.length() - 1)) || expression.length() == 0) {
+                throw new IllegalArgumentException();
+            }
+        }
+        if(in.equals("*")) {
+            if (expression.length() == 0 || !Character.isDigit(expression.charAt(expression.length() - 1)) || expression.length() == 0) {
+                throw new IllegalArgumentException();
+            }
+        }
+        if(in.equals(".")) {
+            if (expression.length() == 0 || !Character.isDigit(expression.charAt(expression.length() - 1)) || expression.length() == 0) {
+                throw new IllegalArgumentException();
+            }
+        }
+        if(in.equals(")")){
+
+        }
+        if(in.equals("^")) {
+            if (expression.length() == 0 || !Character.isDigit(expression.charAt(expression.length() - 1)) || expression.length() == 0) {
+                throw new IllegalArgumentException();
+            }
+        }
+        if(in.equals("^2")) {
+            if (expression.length() == 0 || !Character.isDigit(expression.charAt(expression.length() - 1))) {
+                throw new IllegalArgumentException();
+            }
+        }
+        if(in.equals("NaN")){
+            throw new IllegalArgumentException();
+        }
         expression = expression + in;
     }
 
@@ -48,11 +83,17 @@ public class calc {
     }
 
     public String getPrevInput(){
+        if(pastInput.isEmpty()){
+            return "";
+        }
         return pastInput.get(pastInput.size()-1);
 
     }
 
     public double getPrevResult(){
+        if(pastResult.isEmpty()){
+            return 0.00;
+        }
         return pastResult.get(pastResult.size()-1);
     }
 }

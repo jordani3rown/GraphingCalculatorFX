@@ -619,8 +619,8 @@ public class Main extends Application {
         if(userInput.contains("sqrt")){
             userInput = userInput.replaceAll("sqrt", "√");
         }
-        if(userInput.contains("cbrt")){
-            userInput = userInput.replaceAll("cbrt", "∛");
+        if(userInput.contains("root(3,")){
+            userInput = userInput.replaceAll("root\\(3,", "∛(");
         }
         return userInput;
     }
@@ -674,23 +674,25 @@ public class Main extends Application {
                     }
 
                     if (source == butSquare) {
-                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))){
+                        try{
+                            backEnd.addToExpression("^2");
+                        }catch(IllegalArgumentException b){
                             alert.setHeaderText("Error in Squaring Operation");
                             alert.setContentText("Cannot square a non-number!");
                             alert.showAndWait();
                             return;
                         }
-                        backEnd.addToExpression("^2");
                     }
 
                     if (source == butExp) {
-                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                        try{
+                            backEnd.addToExpression("^");
+                        }catch(IllegalArgumentException b){
                             alert.setHeaderText("Error Applying Exponent");
                             alert.setContentText("Cannot exponentiate a non-number!");
                             alert.showAndWait();
                             return;
                         }
-                        backEnd.addToExpression("^");
                     }
 
                     if (source == butClear) {
@@ -702,7 +704,7 @@ public class Main extends Application {
                     }
 
                     if (source == butRt) {
-                        backEnd.addToExpression("cbrt(");
+                        backEnd.addToExpression("root(3,");
                     }
 
                     if (source == butLog) {
@@ -710,7 +712,7 @@ public class Main extends Application {
                     }
 
                     if (source == butLN) {
-                        backEnd.addToExpression("ln");
+                        backEnd.addToExpression("ln(");
                     }
 
                     if (source == butSin) {
@@ -726,49 +728,57 @@ public class Main extends Application {
                     }
 
                     if (source == butDivide) {
-                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
-                            alert.setHeaderText("Error in Division Operation");
-                            alert.setContentText("Syntax: Number must precede division symbol");
-                            alert.showAndWait();
-                            return;
+                        try{
+                            backEnd.addToExpression("/");
+                        }catch(IllegalArgumentException b){
+
                         }
-                        backEnd.addToExpression("/");
                     }
 
                     if (source == butAdd) {
-                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                        try{
+                            backEnd.addToExpression("+");
+                        }catch(IllegalArgumentException b){
                             alert.setHeaderText("Error in Addition Operation");
                             alert.setContentText("Syntax: Number must precede addition symbol");
                             alert.showAndWait();
                             return;
                         }
-                        backEnd.addToExpression("+");
                     }
 
                     if (source == butSubtract) {
-                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                        try{
+                            backEnd.addToExpression("-");
+                        }catch(IllegalArgumentException b){
                             alert.setHeaderText("Error in Subtraction Operation");
                             alert.setContentText("Syntax: Number must precede minus symbol");
                             alert.showAndWait();
                             return;
                         }
-                        backEnd.addToExpression("-");
                     }
 
                     if(source == butMultiply){
-                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                        try{
+                            backEnd.addToExpression("+");
+                        }catch(IllegalArgumentException b){
                             alert.setHeaderText("Error in Multiplication Operation");
                             alert.setContentText("Syntax: Number must precede multiplication symbol");
                             alert.showAndWait();
                             return;
                         }
-                        backEnd.addToExpression("*");
                     }
 
                     if (source == butEquals) {
                         double result = backEnd.evaluate();
                         backEnd.clear();
-                        backEnd.addToExpression(""+result);
+                        try {
+                            backEnd.addToExpression("" + result);
+                        }catch(IllegalArgumentException b){
+                            alert.setHeaderText("Error in syntax");
+                            alert.setContentText("Unable to evaluate expression");
+                            alert.showAndWait();
+                            return;
+                        }
                     }
 
                     if(source == butEX){
@@ -776,13 +786,14 @@ public class Main extends Application {
                     }
 
                     if(source == butDot){
-                        if(backEnd.getExpression().length()==0||!Character.isDigit(backEnd.getExpression().charAt(backEnd.getExpression().length()-1))||backEnd.getExpression().length()==0){
+                        try{
+                            backEnd.addToExpression(".");
+                        }catch(IllegalArgumentException b){
                             alert.setHeaderText("Error in Dot Operation");
                             alert.setContentText("Syntax: Number must precede a dot");
                             alert.showAndWait();
                             return;
                         }
-                        backEnd.addToExpression(".");
                     }
 
                     if(source == butOpenParen){

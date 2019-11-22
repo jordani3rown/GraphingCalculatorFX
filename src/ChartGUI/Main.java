@@ -1,9 +1,12 @@
 package ChartGUI;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.text.Font;
+import javafx.stage.Popup;
 import org.mariuszgromada.math.mxparser.*;
 
 import javafx.application.Application;
@@ -29,44 +32,66 @@ import java.util.ArrayList;
 public class Main extends Application {
     /** Instance Variables */
 
-    /** BorderPane - contains the following areas: (TOP, LEFT, CENTER, RIGHT, BOTTOM) */
+    /**
+     * BorderPane - contains the following areas: (TOP, LEFT, CENTER, RIGHT, BOTTOM)
+     */
     BorderPane layout;
 
-    /** Accordion to hold the user added expressions */
+    /**
+     * Accordion to hold the user added expressions
+     */
     Accordion functionMenu;
 
-    /**  */
+    /**
+     *
+     */
     TitledPane functionPane;
 
-    /** GridPane to hold user expressionID's and expressionInput fields */
+    /**
+     * GridPane to hold user expressionID's and expressionInput fields
+     */
     GridPane userExpressions;
 
-    /** Button used to add additional expressions */
+    /**
+     * Button used to add additional expressions
+     */
     Button addButton;
 
-    /** Pane used to hold the javafx implementation of the calculator */
+    /**
+     * Pane used to hold the javafx implementation of the calculator
+     */
     VBox containerCalc;
 
-    /**  */
+    /**
+     *
+     */
     GridPane calcButtonPane;
 
     TextArea expressionInput;
 
     RowConstraints textAreaHeight;
 
-    /** Current Count of UserExpressions */
+    /**
+     * Current Count of UserExpressions
+     */
     int expressionCount;
 
-    /** UserExpression object */
+    /**
+     * UserExpression object
+     */
     ArrayList<UserExpression> addedExpressions;
 
     /** Calculator object that held the swing calculator */
     //Calculator calculator;
 
-    /** Array of buttons to be used for the calculator buttons in the JavaFX implementation */
+    /**
+     * Array of buttons to be used for the calculator buttons in the JavaFX implementation
+     */
     private Button[] calcButtons;
 
-    /** Button objects */
+    /**
+     * Button objects
+     */
     Button butSquare;
     Button butExp;
     Button butSqrt;
@@ -129,7 +154,7 @@ public class Main extends Application {
             layout = new BorderPane();
 
             // Custom chart initialized in the start method
-            Scene scene  = new Scene(layout,800,600);
+            Scene scene = new Scene(layout, 800, 600);
 
             // Add the stylesheet to the scene
             scene.getStylesheets().add("ChartGUI/bbgc.css");
@@ -271,7 +296,7 @@ public class Main extends Application {
                     // Condition that checks for cases where Accordion is clicked while located at the bottom of the BorderPane
                     if (functionPane.isExpanded() == true) {
                         // Condition that checks for the current location of the function menu
-                        if(layout.getLeft() != functionPane && layout.getBottom() != null) {
+                        if (layout.getLeft() != functionPane && layout.getBottom() != null) {
                             // Set the top of the BorderPane to null, which removes the node from the bottom of the BorderPane 'layout'
                             layout.setBottom(null);
                             // Change the title
@@ -310,25 +335,21 @@ public class Main extends Application {
             graphTableButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
-                    if(layout.getCenter() == lineChart) {
-                        if(graphTableButton.getText() != "Table") {
+                    if (layout.getCenter() == lineChart) {
+                        if (graphTableButton.getText() != "Table") {
                             graphTableButton.setText("Table");
-                        }
-                        else {
+                        } else {
                             //layout.setCenter(dataTable);
                             graphTableButton.setText("Graph");
                         }
-                    }
-                    else if (layout.getCenter() == dataTable) {
-                        if(graphTableButton.getText() != "Graph") {
+                    } else if (layout.getCenter() == dataTable) {
+                        if (graphTableButton.getText() != "Graph") {
                             graphTableButton.setText("Graph");
-                        }
-                        else {
+                        } else {
                             layout.setCenter(lineChart);
                             graphTableButton.setText("Table");
                         }
-                    }
-                    else {
+                    } else {
                         return;
                     }
                 }
@@ -431,17 +452,16 @@ public class Main extends Application {
         XYChart.Series series = new XYChart.Series();
         String newInput = newExpression.expression;
         calc expressionBackend = new calc();
-        int xMax = (int)example.getXMax();
+        int xMax = (int) example.getXMax();
         String tmpInput = newInput;
 
-        for(int x = (int)example.getXMin(); x < xMax; x++ ) {
+        for (int x = (int) example.getXMin(); x < xMax; x++) {
 
             // Parse the expression, and set the tmpInput to use the current x value instead of the variable x
             if (newInput.contains("x")) {
-                if(newInput.indexOf('x') > 0 && Character.isDigit(newInput.charAt(newInput.indexOf('x') - 1))) {
+                if (newInput.indexOf('x') > 0 && Character.isDigit(newInput.charAt(newInput.indexOf('x') - 1))) {
                     tmpInput = newInput.replaceAll("x", "*" + x);
-                }
-                else if(newInput.indexOf('x') == 0) {
+                } else if (newInput.indexOf('x') == 0) {
                     tmpInput = newInput.replaceAll("x", "" + x);
                 }
             }
@@ -452,12 +472,12 @@ public class Main extends Application {
 
             // Output representing the x and y values for the current expression
             System.out.println("x = " + x);
-            System.out.println("y = " +y);
+            System.out.println("y = " + y);
 
             // Add the data point to the series
             series.getData().add(new XYChart.Data<>(x, y));
             // Print the tmpInput expression
-            System.out.println("Expression: " +tmpInput);
+            System.out.println("Expression: " + tmpInput);
             // Clear the expression for the next iteration of x
             expressionBackend.clear();
         }
@@ -479,7 +499,7 @@ public class Main extends Application {
      *****************************************************************/
     public void createExpression() {
         // expressionCount Increment the number of expressions
-        expressionCount ++;
+        expressionCount++;
 
         // Create a default userExpression object starting with an ID equivalent to 1 and an expression String value of null
         UserExpression userExpression = new UserExpression(expressionCount, null);
@@ -512,7 +532,7 @@ public class Main extends Application {
             public void changed(ObservableValue<? extends String> observableValue, String oldInput, String newInput) {
                 // variable representing the updated string in the text field
                 newExpression.setExpression(newInput);
-                if(newInput != oldInput) {
+                if (newInput != oldInput) {
                     // Remove the series of the current expression from the lineChart
                     lineChart.getData().removeAll(newExpression.expressionSeries);
                 }
@@ -522,7 +542,7 @@ public class Main extends Application {
         userInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if(keyEvent.getCode().equals(KeyCode.ENTER)) {
+                if (keyEvent.getCode().equals(KeyCode.ENTER)) {
                     plotData(newExpression);
                 }
             }
@@ -540,12 +560,14 @@ public class Main extends Application {
         containerCalc.prefHeightProperty().bind(layout.heightProperty().multiply(1.0));
         containerCalc.setFillWidth(true);
         containerCalc.setSpacing(5.0);
-        containerCalc.setPadding(new Insets(5,5,5,5));
+        containerCalc.setPadding(new Insets(5, 5, 5, 5));
 
         // Create expression input text area
         expressionInput = new TextArea();
         //expressionInput.setStyle("-fx-background-color: ECECEC;");
         expressionInput.setMaxHeight(Double.MAX_VALUE);
+        Font font1 = new Font("SansSerif", 23);
+        expressionInput.setFont(font1);
 
         // Setup calculator buttons
         this.calcButtons = createCalcButtons();
@@ -592,7 +614,7 @@ public class Main extends Application {
         butOne = new Button("1");
         butTwo = new Button("2");
         butThree = new Button("3");
-        butComma = new Button(",");
+        butComma = new Button("Store");
         butEquals = new Button("=");
         butZero = new Button("0");
         butDot = new Button(".");
@@ -616,10 +638,10 @@ public class Main extends Application {
         if (userInput.contains("pi")) {
             userInput = userInput.replaceAll("pi", "π");
         }
-        if(userInput.contains("sqrt")){
+        if (userInput.contains("sqrt")) {
             userInput = userInput.replaceAll("sqrt", "√");
         }
-        if(userInput.contains("root(3,")){
+        if (userInput.contains("root(3,")) {
             userInput = userInput.replaceAll("root\\(3,", "∛(");
         }
         return userInput;
@@ -650,11 +672,12 @@ public class Main extends Application {
         int row;
 
 
-        for(int bElement = 0; bElement < calcButtons.length; bElement++) {
+        for (int bElement = 0; bElement < calcButtons.length; bElement++) {
             row = bElement / 5;
             col = bElement % 5;
 
             calcButtons[bElement].setId("calc-button");
+            calcButtons[bElement].setStyle("-fx-font-size:25");
             calcButtons[bElement].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             calcButtonPane.add(calcButtons[bElement], col, row);
             calcButtonPane.setVgrow(calcButtons[bElement], Priority.ALWAYS);
@@ -669,14 +692,14 @@ public class Main extends Application {
                     Button source = currentButton;
 
 
-                    if(source == butOne || source == butTwo || source == butThree || source == butFour || source == butFive || source == butSix || source == butSeven || source == butEight || source == butNine || source == butZero) {
+                    if (source == butOne || source == butTwo || source == butThree || source == butFour || source == butFive || source == butSix || source == butSeven || source == butEight || source == butNine || source == butZero) {
                         backEnd.addToExpression("" + source.getText());
                     }
 
                     if (source == butSquare) {
-                        try{
+                        try {
                             backEnd.addToExpression("^2");
-                        }catch(IllegalArgumentException b){
+                        } catch (IllegalArgumentException b) {
                             alert.setHeaderText("Error in Squaring Operation");
                             alert.setContentText("Cannot square a non-number!");
                             alert.showAndWait();
@@ -685,14 +708,18 @@ public class Main extends Application {
                     }
 
                     if (source == butExp) {
-                        try{
+                        try {
                             backEnd.addToExpression("^");
-                        }catch(IllegalArgumentException b){
+                        } catch (IllegalArgumentException b) {
                             alert.setHeaderText("Error Applying Exponent");
                             alert.setContentText("Cannot exponentiate a non-number!");
                             alert.showAndWait();
                             return;
                         }
+                    }
+
+                    if(source == butVar){
+                        backEnd.addToExpression("X");
                     }
 
                     if (source == butClear) {
@@ -728,17 +755,17 @@ public class Main extends Application {
                     }
 
                     if (source == butDivide) {
-                        try{
+                        try {
                             backEnd.addToExpression("/");
-                        }catch(IllegalArgumentException b){
+                        } catch (IllegalArgumentException b) {
 
                         }
                     }
 
                     if (source == butAdd) {
-                        try{
+                        try {
                             backEnd.addToExpression("+");
-                        }catch(IllegalArgumentException b){
+                        } catch (IllegalArgumentException b) {
                             alert.setHeaderText("Error in Addition Operation");
                             alert.setContentText("Syntax: Number must precede addition symbol");
                             alert.showAndWait();
@@ -747,9 +774,9 @@ public class Main extends Application {
                     }
 
                     if (source == butSubtract) {
-                        try{
+                        try {
                             backEnd.addToExpression("-");
-                        }catch(IllegalArgumentException b){
+                        } catch (IllegalArgumentException b) {
                             alert.setHeaderText("Error in Subtraction Operation");
                             alert.setContentText("Syntax: Number must precede minus symbol");
                             alert.showAndWait();
@@ -757,10 +784,10 @@ public class Main extends Application {
                         }
                     }
 
-                    if(source == butMultiply){
-                        try{
-                            backEnd.addToExpression("+");
-                        }catch(IllegalArgumentException b){
+                    if (source == butMultiply) {
+                        try {
+                            backEnd.addToExpression("*");
+                        } catch (IllegalArgumentException b) {
                             alert.setHeaderText("Error in Multiplication Operation");
                             alert.setContentText("Syntax: Number must precede multiplication symbol");
                             alert.showAndWait();
@@ -773,7 +800,7 @@ public class Main extends Application {
                         backEnd.clear();
                         try {
                             backEnd.addToExpression("" + result);
-                        }catch(IllegalArgumentException b){
+                        } catch (IllegalArgumentException b) {
                             alert.setHeaderText("Error in syntax");
                             alert.setContentText("Unable to evaluate expression");
                             alert.showAndWait();
@@ -781,14 +808,14 @@ public class Main extends Application {
                         }
                     }
 
-                    if(source == butEX){
+                    if (source == butEX) {
                         backEnd.addToExpression("e^");
                     }
 
-                    if(source == butDot){
-                        try{
+                    if (source == butDot) {
+                        try {
                             backEnd.addToExpression(".");
-                        }catch(IllegalArgumentException b){
+                        } catch (IllegalArgumentException b) {
                             alert.setHeaderText("Error in Dot Operation");
                             alert.setContentText("Syntax: Number must precede a dot");
                             alert.showAndWait();
@@ -796,33 +823,33 @@ public class Main extends Application {
                         }
                     }
 
-                    if(source == butOpenParen){
+                    if (source == butOpenParen) {
                         backEnd.addToExpression("(");
                     }
 
-                    if(source == butCloseParen){
+                    if (source == butCloseParen) {
                         backEnd.addToExpression(")");
                     }
 
-                    if(source == butDel){
+                    if (source == butDel) {
                         backEnd.del();
                     }
 
-                    if(source == butPi){
+                    if (source == butPi) {
                         backEnd.addToExpression("pi");
                     }
 
-                    if(source == butComma){
-                        backEnd.addToExpression(",");
+                    if (source == butComma) {
+                        backEnd.storeInVar();
                     }
 
-                    if(source == butUndo){
+                    if (source == butUndo) {
                         backEnd.clear();
                         backEnd.addToExpression(backEnd.getPrevInput());
                     }
 
-                    if(source == butAns){
-                        backEnd.addToExpression(""+backEnd.getPrevResult());
+                    if (source == butAns) {
+                        backEnd.addToExpression("" + backEnd.getPrevResult());
                     }
                     // need to clear before appending the updated expression
                     expressionInput.clear();

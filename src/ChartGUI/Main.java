@@ -7,6 +7,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import javafx.stage.Popup;
+import javafx.util.Pair;
 import org.mariuszgromada.math.mxparser.*;
 
 import javafx.application.Application;
@@ -27,6 +28,9 @@ import javafx.stage.Stage;
 import javafx.scene.control.TextArea;
 
 import java.util.ArrayList;
+import java.util.Optional;
+
+import static java.lang.Double.parseDouble;
 
 
 public class Main extends Application {
@@ -127,6 +131,7 @@ public class Main extends Application {
     Button butPi;
     Button butUndo;
     Button butAns;
+    Button butPoly;
 
     calc backEnd;
     String userInput;
@@ -621,11 +626,12 @@ public class Main extends Application {
         butPi = new Button("π");
         butUndo = new Button("Undo");
         butAns = new Button("Answer");
+        butPoly = new Button("Quadratic");
 
         calcButtons = new Button[]{butSquare, butExp, butSqrt, butRt, butEX, butLog, butLN,
                 butCos, butSin, butTan, butOpenParen, butCloseParen, butVar, butDel, butClear,
                 butSeven, butEight, butNine, butMultiply, butDivide, butFour, butFive, butSix,
-                butAdd, butSubtract, butOne, butTwo, butThree, butPi, butEquals, butZero, butDot, butComma, butUndo, butAns};
+                butAdd, butSubtract, butOne, butTwo, butThree, butPi, butEquals, butZero, butDot, butComma, butUndo, butAns, butPoly};
 
         return calcButtons;
 
@@ -643,6 +649,9 @@ public class Main extends Application {
         }
         if (userInput.contains("root(3,")) {
             userInput = userInput.replaceAll("root\\(3,", "∛(");
+        }
+        if(userInput.contains("log(10,")){
+            userInput = userInput.replaceAll("log\\(10,", "log(");
         }
         return userInput;
     }
@@ -851,13 +860,57 @@ public class Main extends Application {
                     if (source == butAns) {
                         backEnd.addToExpression("" + backEnd.getPrevResult());
                     }
+                    if(source == butPoly){
+                        polyRoot();
+                    }
                     // need to clear before appending the updated expression
                     expressionInput.clear();
                     expressionInput.appendText(displayExpression());
                 }
             });
         }
+    }
 
+    public void polyRoot(){
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Quadratic Root Calculator");
+        dialog.setHeaderText("Please fill in the coefficients for the following equation:\n Ax^2 + Bx + C = 0");
+
+        ButtonType loginButtonType = new ButtonType("Find Roots", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField a = new TextField();
+        a.setPromptText("A");
+        TextField b = new TextField();
+        b.setPromptText("B");
+        TextField c = new TextField();
+        c.setPromptText("C");
+
+        grid.add(new Label("A:"), 0, 0);
+        grid.add(a, 1, 0);
+        grid.add(new Label("B:"), 0, 1);
+        grid.add(b, 1, 1);
+        grid.add(new Label("C:"), 0, 2);
+        grid.add(c, 1, 2);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == loginButtonType) {
+                Alert dlert = new Alert(Alert.AlertType.CONFIRMATION);
+                dlert.setHeaderText("Roots of quadratic");
+                dlert.setContentText(backEnd.polySolve(parseDouble(a.getText()), parseDouble(b.getText()),parseDouble(c.getText())));
+                dlert.showAndWait();
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result1 = dialog.showAndWait();
     }
 
 }

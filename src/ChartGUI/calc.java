@@ -19,8 +19,17 @@ public class calc {
      */
     public calc() {
         expression = "";
+        stored = "";
         pastInput = new ArrayList<>();
         pastResult = new ArrayList<>();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getStored(){
+        return stored;
     }
 
     /**
@@ -129,6 +138,24 @@ public class calc {
             return 0.00;
         }
         return pastResult.remove(pastResult.size() - 1);
+    }
+
+    public String polySolve(double a, double b, double c){
+        double dis;
+        double root;
+        if (a == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        dis = Math.pow(b, 2.0) - 4*a*c;
+        root = Math.sqrt(Math.abs(dis));
+
+        if (dis > 0){
+            return "x = " + ((-b + root) / (2 * a) + "\nx = " +(-b - root) / (2 * a));
+        }
+        else{
+            return "x = " + (-b / ( 2 * a ) + " + i(" + root/(2*a) + ")\nx = "  + -b / ( 2 * a ) + " - i(" + root/(2*a))+ ")";
+        }
     }
 
     public void storeInVar(){

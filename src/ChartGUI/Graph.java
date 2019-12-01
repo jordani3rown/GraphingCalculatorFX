@@ -16,9 +16,6 @@ public class Graph {
     /** double that contains the length of each hash mark */
     private double tickDistance;
 
-    /** Array of nodes which contains the plotted data points */
-    private Point[] dataTable;
-
     private Graph graph;
 
     /*****************************************************************
@@ -34,13 +31,13 @@ public class Graph {
      *****************************************************************/
     public void setAxes() {
         // Set the min and max values of the x axis
-        setXMin(-10.0);
-        setXMax(10.0);
+        setXMin(-20.0);
+        setXMax(20.0);
         // Set the min and max values of the y axis
-        setYMin(-10.0);
-        setYMax(10.0);
+        setYMin(-20.0);
+        setYMax(20.0);
         // Set the distance between hash marks
-        setTickDistance(1.0);
+        setTickDistance(0.5);
     }
 
     /*****************************************************************

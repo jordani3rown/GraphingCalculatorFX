@@ -3,6 +3,7 @@ package ChartGUI;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
 
 
 public class Main extends Application {
@@ -151,12 +153,23 @@ public class Main extends Application {
         try {
             addedExpressions = new ArrayList<UserExpression>();
 
+            example = new Graph();
+
             calcButtons = createCalcButtons();
 
             backEnd = new calc();
 
             // Initialize the BorderPane
             layout = new BorderPane();
+
+            MenuItem m1 = new MenuItem("Change Graph Window");
+            MenuItem m2 = new MenuItem("Calculator Syntax");
+            m2.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    System.out.println("Option 3 selected");
+                }
+            });
 
             // Custom chart initialized in the start method
             Scene scene = new Scene(layout, 800, 600);
@@ -217,40 +230,15 @@ public class Main extends Application {
             Button graphTableButton = new Button("Table");
             // Button used to access the settings
             // (Settings Menu currently not implemented)
-            Button settingsButton = new Button();
+            MenuButton settingsButton = new MenuButton();
+            settingsButton.getItems().add(m1);
+            settingsButton.getItems().add(m2);
 
             //calcButton.setStyle("-fx-background-color: #2E303E; -fx-text-fill: #ffffff");
             //graphTableButton.setStyle("-fx-background-color: #2E303E; -fx-text-fill: #ffffff");
             calcButton.getStyleClass().add("topButton");
             graphTableButton.getStyleClass().add("topButton");
 
-
-            // Notes for future addition of hovering effects on buttons
-            /*
-            EventHandler<DragEvent> enterHandler = new EventHandler<DragEvent>() {
-                @Override
-                public void handle(DragEvent hover) {
-                    if(hover.getTarget() == calcButton) {
-                        calcButton.setId("topButton:hover");
-                        while (hover.getTarget() == calcButton) {
-                            continue;
-                        }
-                        calcButton.setId("topButton");
-                    }
-                    else if(hover.getTarget() == graphTableButton) {
-                        graphTableButton.setId("topButton:hover");
-                        while(hover.getTarget() == graphTableButton) {
-                            continue;
-                        }
-                    }
-                    else {
-                        return;
-                    }
-                }
-            };
-            calcButton.setOnDragEntered(enterHandler);
-            graphTableButton.setOnDragEntered(enterHandler);
-            */
 
             // Adding Background image to settings menu
             Image menu = new Image(getClass().getResourceAsStream("images/menuButtonWhite.jpg"));
@@ -270,7 +258,6 @@ public class Main extends Application {
             // Define the Max size and bind the topPane to its container 'layout'
             topPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
             topPane.prefWidthProperty().bind(layout.widthProperty());
-
             // Set the relative lengths for the ColumnConstraints
             cc.setPercentWidth(90);
             ccSettings.setPercentWidth(10);
@@ -330,6 +317,56 @@ public class Main extends Application {
             LineChart lineChart = createLineChart();
             // Set the location of the chart in the BorderPane
             layout.setCenter(lineChart);
+
+            m1.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    Dialog<Pair<String, String>> dialog = new Dialog<>();
+                    dialog.setTitle("Change Axes for Graph");
+                    dialog.setHeaderText("Please set the min and max values for x and y");
+
+                    ButtonType loginButtonType = new ButtonType("Set", ButtonBar.ButtonData.OK_DONE);
+                    dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+
+                    GridPane grid = new GridPane();
+                    grid.setHgap(10);
+                    grid.setVgap(10);
+                    grid.setPadding(new Insets(20, 150, 10, 10));
+
+                    TextField a = new TextField();
+                    a.setPromptText("Y minimum");
+                    TextField b = new TextField();
+                    b.setPromptText("Y maximum");
+                    TextField c = new TextField();
+                    c.setPromptText("X minimum");
+                    TextField d = new TextField();
+                    d.setPromptText("X maximum");
+
+                    grid.add(new Label("Y min:"), 0, 0);
+                    grid.add(a, 1, 0);
+                    grid.add(new Label("Y max:"), 0, 1);
+                    grid.add(b, 1, 1);
+                    grid.add(new Label("X min:"), 0, 2);
+                    grid.add(c, 1, 2);
+                    grid.add(new Label("X max:"), 0,3);
+                    grid.add(d,1,3);
+
+                    dialog.getDialogPane().setContent(grid);
+
+                    dialog.setResultConverter(dialogButton -> {
+                        if (dialogButton == loginButtonType) {
+                            example.setYMin(parseInt(a.getText()));
+                            example.setYMax(parseInt(b.getText()));
+                            example.setXMin(parseInt(c.getText()));
+                            example.setXMax(parseInt(d.getText()));
+                            LineChart s = createLineChart();
+                            layout.setCenter(s);
+                        }
+                        return null;
+                    });
+                    Optional<Pair<String, String>> result1 = dialog.showAndWait();
+                }
+            });
             // Plot the data on the chart
             //plotData(lineChart);
 
@@ -344,7 +381,6 @@ public class Main extends Application {
                         if (graphTableButton.getText() != "Table") {
                             graphTableButton.setText("Table");
                         } else {
-                            //layout.setCenter(dataTable);
                             graphTableButton.setText("Graph");
                         }
                     } else if (layout.getCenter() == dataTable) {
@@ -368,36 +404,6 @@ public class Main extends Application {
                     // Create a new expression when the mouse is clicked
                     layout.setCenter(null);
                     layout.setCenter(containerCalc);
-                    /*
-                    if(layout.getCenter() == lineChart) {
-                        if(calcButton.getText() != "Calculator" && graphTableButton.getText() != "Graph") {
-
-                            graphTableButton.setText("Calculator");
-                        }
-                        else if(calcButton.getText() == "Calculator" && graphTableButton.getText() == "Table") {
-                            graphTableButton.setText("Graph");
-                        }
-
-                        }
-                        else {
-                            layout.setCenter(dataTable);
-                            graphTableButton.setText("Graph");
-                        }
-                    }
-                    else if (layout.getCenter() == dataTable) {
-                        if(graphTableButton.getText() != "Graph") {
-                            graphTableButton.setText("Graph");
-                        }
-                        else {
-                            layout.setCenter(lineChart);
-                            graphTableButton.setText("Table");
-                        }
-                    }
-                    else {
-                        return;
-                    }
-                     */
-
                 }
             });
 
@@ -420,7 +426,6 @@ public class Main extends Application {
      *****************************************************************/
     public LineChart<Number, Number> createLineChart() {
         // Create a new Graph object
-        example = new Graph();
 
         //defining the axes
         //final NumberAxis xAxis = new NumberAxis(-10, 10, 1);

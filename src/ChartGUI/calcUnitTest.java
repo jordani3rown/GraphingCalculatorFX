@@ -10,7 +10,14 @@ public class calcUnitTest {
     @Test
     public void evaluate() {
         calc temp = new calc();
-
+        temp.addToExpression("4*3*4+2*2");
+        assertEquals(52.0, temp.evaluate(), 0.0001);
+        temp.clear();
+        temp.addToExpression("cos(21.78)/sin(21)+(8*sqrt(16))");
+        assertEquals(30.83131, temp.evaluate(), 0.0001);
+        temp.clear();
+        temp.addToExpression("e^(25)+ln(59.5)");
+        assertEquals(7.20048993414718e10, temp.evaluate(), 0.0001);
     }
 
     @Test

@@ -1,11 +1,11 @@
 package ChartGUI;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import org.mariuszgromada.math.mxparser.*;
-
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -22,7 +22,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.control.TextArea;
-
 import java.util.ArrayList;
 
 
@@ -35,7 +34,7 @@ public class Main extends Application {
     /** Accordion to hold the user added expressions */
     Accordion functionMenu;
 
-    /**  */
+    /** Pane that will contain the userExpressions and their corresponding ID's */
     TitledPane functionPane;
 
     /** GridPane to hold user expressionID's and expressionInput fields */
@@ -47,24 +46,23 @@ public class Main extends Application {
     /** Pane used to hold the javafx implementation of the calculator */
     VBox containerCalc;
 
-    /**  */
+    /** Contains the buttons for the calculator */
     GridPane calcButtonPane;
 
+    /** Text area that takes in user input in the form of mathematical expressions */
     TextArea expressionInput;
-
-    RowConstraints textAreaHeight;
 
     /** Current Count of UserExpressions */
     int expressionCount;
 
-    /** UserExpression object */
+    /** ArrayList of UserExpression objects that have been created by the user */
     ArrayList<UserExpression> addedExpressions;
-
-    /** Calculator object that held the swing calculator */
-    //Calculator calculator;
 
     /** Array of buttons to be used for the calculator buttons in the JavaFX implementation */
     private Button[] calcButtons;
+
+    /** ObservableList of Point objects that is used for the TableView */
+    private ObservableList<Point> line = FXCollections.observableArrayList();
 
     /** Button objects */
     Button butSquare;
@@ -103,10 +101,19 @@ public class Main extends Application {
     Button butUndo;
     Button butAns;
 
+    /** TableView of the plotted lines */
+    TableView dataTable;
+
+    /** Parsing object */
     calc backEnd;
+
+    /** String provided by the user */
     String userInput;
 
-    Graph example;
+    /** Graph object */
+    Graph graph;
+
+    /** LineChart used to plot the mathematical expressions */
     LineChart<Number, Number> lineChart;
 
 
@@ -119,17 +126,20 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         // Wrap method inside try-catch block
         try {
-            addedExpressions = new ArrayList<UserExpression>();
+            // Initialize the ArrayList addedExpressions
+            addedExpressions = new ArrayList<>();
 
+            // Setup the Calculator Buttons
             calcButtons = createCalcButtons();
 
+            // Create a new calc object to parse the user input
             backEnd = new calc();
 
             // Initialize the BorderPane
             layout = new BorderPane();
 
             // Custom chart initialized in the start method
-            Scene scene  = new Scene(layout,800,600);
+            Scene scene  = new Scene(layout,1280,960);
 
             // Add the stylesheet to the scene
             scene.getStylesheets().add("ChartGUI/bbgc.css");
@@ -142,18 +152,16 @@ public class Main extends Application {
 
             // Initialize the GridPane
             userExpressions = new GridPane();
+            userExpressions.setId("expression-panel");
 
             // Initialize the TitledPane with the title Functions
             functionPane = new TitledPane("Collapse", userExpressions);
-            //functionPane.setEffect(new DropShadow(10, Color.GRAY));
 
-            // Set top padding to 2px for the TitledPane
-            functionPane.setPadding(new Insets(2, 0, 0, 0));
+            // Set top padding to 2px for the TitledPane top, right, bottom, left
+            functionPane.setPadding(new Insets(0, 0, 0, 0));
 
             // Set the default status of the TitledPane to expanded
             functionMenu.setExpandedPane(functionPane);
-            // Apply the stylesheet to the titledPane
-            //functionPane.applyCss();
 
             // Initialize expressionCount
             expressionCount = 0;
@@ -163,6 +171,7 @@ public class Main extends Application {
 
             // Initialize addButton to add additional expressions
             addButton = new Button("+");
+            addButton.setId("addButton");
 
             // Add the button to the GridPane
             userExpressions.add(addButton, 0, 1);
@@ -175,65 +184,67 @@ public class Main extends Application {
                     createExpression();
                 }
             });
+
             // Create the first UserExpression with an empty TextField
             createExpression();
+
+            // Setup the calculator buttons and input text area
             setupCalculator();
 
-            // BorderPane top section for calculator and graphing tabs
+            // BorderPane TOP section for calculator and graphing tabs
             // Button used to switch to the Calculator node
-            Button calcButton = new Button("Calculator");
-            // Button used to switch between charting and TableView
-            // (TableView currently not implemented)
-            Button graphTableButton = new Button("Table");
-            // Button used to access the settings
-            // (Settings Menu currently not implemented)
-            Button settingsButton = new Button();
+            ToggleButton calcButton = new ToggleButton("Calculator");
+            // Button used to switch to LineChart
+            ToggleButton graphButton = new ToggleButton("Graph");
+            // Button used to switch to TableView
+            ToggleButton tableButton = new ToggleButton("Table");
 
-            //calcButton.setStyle("-fx-background-color: #2E303E; -fx-text-fill: #ffffff");
-            //graphTableButton.setStyle("-fx-background-color: #2E303E; -fx-text-fill: #ffffff");
-            calcButton.getStyleClass().add("topButton");
-            graphTableButton.getStyleClass().add("topButton");
+            // Group of the ToggleButtons that are displayed in the topPane of the BorderPane 'layout'
+            final ToggleGroup topNav = new ToggleGroup();
+            // Add each ToggleButton to the ToggleGroup
+            calcButton.setToggleGroup(topNav);
+            graphButton.setToggleGroup(topNav);
+            tableButton.setToggleGroup(topNav);
 
-
-            // Notes for future addition of hovering effects on buttons
-            /*
-            EventHandler<DragEvent> enterHandler = new EventHandler<DragEvent>() {
+            // Set the selected Toggle to true, and inherit style properties on selection
+            topNav.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
                 @Override
-                public void handle(DragEvent hover) {
-                    if(hover.getTarget() == calcButton) {
-                        calcButton.setId("topButton:hover");
-                        while (hover.getTarget() == calcButton) {
-                            continue;
+                public void changed(ObservableValue<? extends Toggle> observableValue, Toggle oldToggle, Toggle newToggle) {
+                    while(newToggle != null) {
+                        if(topNav.getSelectedToggle() != newToggle) {
+                            topNav.selectToggle(newToggle);
                         }
-                        calcButton.setId("topButton");
-                    }
-                    else if(hover.getTarget() == graphTableButton) {
-                        graphTableButton.setId("topButton:hover");
-                        while(hover.getTarget() == graphTableButton) {
-                            continue;
+                        else {
+                            return;
                         }
-                    }
-                    else {
-                        return;
                     }
                 }
-            };
-            calcButton.setOnDragEntered(enterHandler);
-            graphTableButton.setOnDragEntered(enterHandler);
-            */
+            });
+
+
+            // Button used to access the settings
+            // (SETTINGS MENU, NOT CURRENTLY IMPLEMENTED)
+            //Button settingsButton = new Button();
+
+
+            // Set the style for the buttons that will be located in the top pane of the BorderPane 'layout'
+            calcButton.getStyleClass().add("topButton");
+            tableButton.getStyleClass().add("topButton");
+            graphButton.getStyleClass().add("topButton");
 
             // Adding Background image to settings menu
-            Image menu = new Image(getClass().getResourceAsStream("images/menuButtonWhite.jpg"));
-            BackgroundImage menuBut = new BackgroundImage(menu, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(settingsButton.getWidth(), settingsButton.getHeight(), true, true, true, false));
-            Background settingsBG = new Background(menuBut);
-            settingsButton.setBackground(settingsBG);
+            //Image menu = new Image(getClass().getResourceAsStream("images/menuButtonWhite.jpg"));
+           // BackgroundImage menuBut = new BackgroundImage(menu, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(settingsButton.getWidth(), settingsButton.getHeight(), true, true, true, false));
+            //Background settingsBG = new Background(menuBut);
+            //settingsButton.setBackground(settingsBG);
 
             // Create GridPane to hold the buttons
             GridPane topPane = new GridPane();
+            topPane.setId("topNav");
 
             // Creating ColumnConstraints for the GridPain in order to set the relative lengths for the buttons
             ColumnConstraints cc = new ColumnConstraints();
-            ColumnConstraints ccSettings = new ColumnConstraints();
+            //ColumnConstraints ccSettings = new ColumnConstraints();
 
             // Set the top bane of the layout BorderPane to the GridPane 'topPane' in which will consist of 3 buttons
             layout.setTop(topPane);
@@ -241,21 +252,24 @@ public class Main extends Application {
             topPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
             topPane.prefWidthProperty().bind(layout.widthProperty());
 
-            // Set the relative lengths for the ColumnConstraints
-            cc.setPercentWidth(90);
-            ccSettings.setPercentWidth(10);
+            // Set the column constraints for the first 3 columns to take up 90% of the total width
+            cc.setPercentWidth(100);
+            // Set the column constraints for the settings button to take up the last 10% of the total width
+            //ccSettings.setPercentWidth(9.5);
             // Add the ColumnConstraints to the GridPane 'topPane'
-            topPane.getColumnConstraints().addAll(cc, cc, ccSettings);
+            topPane.getColumnConstraints().addAll(cc, cc, cc);
 
-            // Add the buttons to the topPane
+            // Add all of the buttons to the topPane
             topPane.add(calcButton, 0, 0);
-            topPane.add(graphTableButton, 1, 0);
-            topPane.add(settingsButton, 2, 0);
+            topPane.add(tableButton, 1, 0);
+            topPane.add(graphButton, 2, 0);
+            //topPane.add(settingsButton, 3, 0);
 
             // Set the lengths for the buttons to span the length of their ColumnConstraints
             calcButton.setMaxWidth(Double.MAX_VALUE);
-            graphTableButton.setMaxWidth(Double.MAX_VALUE);
-            settingsButton.setMaxWidth(Double.MAX_VALUE);
+            tableButton.setMaxWidth(Double.MAX_VALUE);
+            graphButton.setMaxWidth(Double.MAX_VALUE);
+            //settingsButton.setMaxWidth(Double.MAX_VALUE);
 
             // Add text to TextField to be informative to the user
             //userInput.setPromptText("Enter Expression Here");
@@ -278,6 +292,7 @@ public class Main extends Application {
                             functionPane.setText("Collapse");
                             // Set the location of the function menu to the left of the BorderPane 'layout'
                             layout.setLeft(functionPane);
+                            functionPane.setMaxHeight(layout.getLeft().getLayoutY());
                         }
                         // Return if the Accordion is expanded and is already set to the left side of the BorderPane 'layout'
                         else {
@@ -296,82 +311,50 @@ public class Main extends Application {
                 }
             });
 
+
             // Create the lineChart
             LineChart lineChart = createLineChart();
-            // Set the location of the chart in the BorderPane
+            // Set the default center pane of the BorderPane to the LineChart view
             layout.setCenter(lineChart);
-            // Plot the data on the chart
-            //plotData(lineChart);
+            // Select the graphButton in the topPane of the BorderPane 'layout'
+            graphButton.setSelected(true);
 
             // Create a table of the data
-            TableView dataTable = new TableView();
-
-            // MouseEvent to change the Button text and Transition between LineChart and TableView
-            graphTableButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    if(layout.getCenter() == lineChart) {
-                        if(graphTableButton.getText() != "Table") {
-                            graphTableButton.setText("Table");
-                        }
-                        else {
-                            //layout.setCenter(dataTable);
-                            graphTableButton.setText("Graph");
-                        }
-                    }
-                    else if (layout.getCenter() == dataTable) {
-                        if(graphTableButton.getText() != "Graph") {
-                            graphTableButton.setText("Graph");
-                        }
-                        else {
-                            layout.setCenter(lineChart);
-                            graphTableButton.setText("Table");
-                        }
-                    }
-                    else {
-                        return;
-                    }
-                }
-            });
+            dataTable = new TableView();
 
 
-            // Create event handler for the calculator button in the top pane MouseEvent.MOUSE_CLICK
+
+
+            // Create event handler for the calculator button in the top pane
             calcButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
-                    // Create a new expression when the mouse is clicked
+                    // set the center pane to null
                     layout.setCenter(null);
+                    // set the center pane to the VBox containing the calculator
                     layout.setCenter(containerCalc);
-                    /*
-                    if(layout.getCenter() == lineChart) {
-                        if(calcButton.getText() != "Calculator" && graphTableButton.getText() != "Graph") {
+                }
+            });
 
-                            graphTableButton.setText("Calculator");
-                        }
-                        else if(calcButton.getText() == "Calculator" && graphTableButton.getText() == "Table") {
-                            graphTableButton.setText("Graph");
-                        }
+            // MouseEvent to change switch center pane of BorderPane 'layout' to TableView
+            tableButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    // set the center pane to null
+                    layout.setCenter(null);
+                    // set the center pane to the dataTable TableView object
+                    layout.setCenter(dataTable);
+                }
+            });
 
-                        }
-                        else {
-                            layout.setCenter(dataTable);
-                            graphTableButton.setText("Graph");
-                        }
-                    }
-                    else if (layout.getCenter() == dataTable) {
-                        if(graphTableButton.getText() != "Graph") {
-                            graphTableButton.setText("Graph");
-                        }
-                        else {
-                            layout.setCenter(lineChart);
-                            graphTableButton.setText("Table");
-                        }
-                    }
-                    else {
-                        return;
-                    }
-                     */
-
+            // MouseEvent to change the center pane of the BorderPane 'layout' to the LineChart object
+            graphButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    // set the center pane to null
+                    layout.setCenter(null);
+                    // set the center pane to the LineChart object
+                    layout.setCenter(lineChart);
                 }
             });
 
@@ -394,15 +377,15 @@ public class Main extends Application {
      *****************************************************************/
     public LineChart<Number, Number> createLineChart() {
         // Create a new Graph object
-        example = new Graph();
+        graph = new Graph();
 
         //defining the axes
         //final NumberAxis xAxis = new NumberAxis(-10, 10, 1);
-        double xMin = example.getXMin();
-        double xMax = example.getXMax();
-        double yMin = example.getYMin();
-        double yMax = example.getYMax();
-        double tickInterval = example.getTickDistance();
+        double xMin = graph.getXMin();
+        double xMax = graph.getXMax();
+        double yMin = graph.getYMin();
+        double yMax = graph.getYMax();
+        double tickInterval = graph.getTickDistance();
 
         NumberAxis xAxis = new NumberAxis(xMin, xMax, tickInterval);
         NumberAxis yAxis = new NumberAxis(yMin, yMax, tickInterval);
@@ -426,22 +409,35 @@ public class Main extends Application {
      Method that plots the data points on the lineChart
      *****************************************************************/
     public void plotData(UserExpression newExpression) {
-        //ObservableList<XYChart.Data> sList = expressionSeries.dataProperty();
-
+        // Initialize a series of data points
         XYChart.Series series = new XYChart.Series();
+        // Obtain the String object of the expression
         String newInput = newExpression.expression;
+        // Initialize a new calc object
         calc expressionBackend = new calc();
-        int xMax = (int)example.getXMax();
+
+        // Create columns in the TableView for the X and Y values of the current expression
+        TableColumn<Point, Double> colX = new TableColumn<>("X" + newExpression.expressionID);
+        TableColumn<Point, Double> colY = new TableColumn<>("Y" + newExpression.expressionID);
+
+        dataTable.getColumns().addAll(colX, colY);
+
+        // Set the maximum x value of x for the LineChart
+        int xMax = (int) graph.getXMax();
+        // Temporary String object to use for calculating individual data points
         String tmpInput = newInput;
 
-        for(int x = (int)example.getXMin(); x < xMax; x++ ) {
 
+        // Iterate through the visible x and y values and set the corresponding data points
+        for(int x = (int) graph.getXMin(); x < xMax; x++ ) {
             // Parse the expression, and set the tmpInput to use the current x value instead of the variable x
             if (newInput.contains("x")) {
+                // Check if the character preceding the variable x is a digit, if so, multiply the current iteration of x
                 if(newInput.indexOf('x') > 0 && Character.isDigit(newInput.charAt(newInput.indexOf('x') - 1))) {
                     tmpInput = newInput.replaceAll("x", "*" + x);
                 }
-                else if(newInput.indexOf('x') == 0) {
+                // Set the value of x if the character preceding is not a digit
+                else {
                     tmpInput = newInput.replaceAll("x", "" + x);
                 }
             }
@@ -450,28 +446,32 @@ public class Main extends Application {
             expressionBackend.addToExpression(tmpInput);
             double y = expressionBackend.evaluate();
 
-            // Output representing the x and y values for the current expression
+            // Output representing the x and y values for the current expression to the console
             System.out.println("x = " + x);
             System.out.println("y = " +y);
 
             // Add the data point to the series
             series.getData().add(new XYChart.Data<>(x, y));
+            // Add the data point to the dataTable
+            Point p = new Point(x, y);
+            // Add the point object to the observable list 'line'
+            line.add(p);
+
             // Print the tmpInput expression
             System.out.println("Expression: " +tmpInput);
             // Clear the expression for the next iteration of x
             expressionBackend.clear();
         }
-        // Add the data to the lineChart
-        lineChart.getData().add(series);
         // Add the series to the UserExpression object 'newExpression'
         newExpression.setExpressionSeries(series);
+        // Add the data to the lineChart
+        lineChart.getData().add(series);
 
-        //series.setName("Series Name");
-
-        //populating the series with data
-        //series.getData().add(new XYChart.Data(0, 2));
-        //series.getData().add(new XYChart.Data(1, 4));
-
+        // Tell the dataTable where to retrieve the data for the x and y columns
+        colX.setCellValueFactory(new PropertyValueFactory<>("x"));
+        colY.setCellValueFactory(new PropertyValueFactory<>("y"));
+        // Add the data to the TableView 'dataTable'
+        dataTable.setItems(line);
     }
 
     /*****************************************************************
@@ -486,6 +486,7 @@ public class Main extends Application {
 
         // Label the expression box
         Label expressionID = new Label("" + userExpression.getExpressionID() + ". ");
+        expressionID.setId("expressionID");
 
         // Create the text field that will take in the user input
         TextField userInput = new TextField();
@@ -504,9 +505,10 @@ public class Main extends Application {
         UserExpression newExpression = new UserExpression(expressionCount, null);
         //UserExpression newExpression = new UserExpression(expressionCount, userInput.getText());
 
+        // Add the expression to the ArrayList 'addedExpressions'
         addedExpressions.add(newExpression);
 
-
+        // Remove the line from the plot if the expression is modified
         userInput.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String oldInput, String newInput) {
@@ -518,7 +520,7 @@ public class Main extends Application {
                 }
             }
         });
-
+        // When the enter button is pressed in the expression text field then plot the expression on the graph
         userInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -529,23 +531,27 @@ public class Main extends Application {
         });
     }
 
-
     /*****************************************************************
      Creates and sets the content of the SwingNode for the javafx calculator
      *****************************************************************/
     public void setupCalculator() {
+        // Initialize the container of the calculator with type VBox
         containerCalc = new VBox();
+        // Set the maximum size of the VBox
         containerCalc.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        // Bind the width and height of the Calculator container
         containerCalc.prefWidthProperty().bind(layout.widthProperty().multiply(1.0));
         containerCalc.prefHeightProperty().bind(layout.heightProperty().multiply(1.0));
+        // Set Fill, Spacing, and Padding defaults for the calculator
         containerCalc.setFillWidth(true);
         containerCalc.setSpacing(5.0);
         containerCalc.setPadding(new Insets(5,5,5,5));
 
         // Create expression input text area
         expressionInput = new TextArea();
-        //expressionInput.setStyle("-fx-background-color: ECECEC;");
         expressionInput.setMaxHeight(Double.MAX_VALUE);
+
+        containerCalc.setId("calculator-container");
 
         // Setup calculator buttons
         this.calcButtons = createCalcButtons();
@@ -557,12 +563,16 @@ public class Main extends Application {
         // Set the components to vertically expand with a given priority
         containerCalc.setVgrow(expressionInput, Priority.SOMETIMES);
         containerCalc.setVgrow(calcButtonPane, Priority.ALWAYS);
+
+        // Set the height of the TextArea to 20% of the height of the VBox
+        expressionInput.setPrefHeight(containerCalc.getPrefHeight() * 0.20);
     }
 
     /*****************************************************************
      Creates and labels the calculator buttons
      *****************************************************************/
     public Button[] createCalcButtons() {
+        // Initialize each of the calculator buttons
         butSquare = new Button("^2");
         butExp = new Button("^");
         butSqrt = new Button("√");
@@ -598,21 +608,29 @@ public class Main extends Application {
         butDot = new Button(".");
         butPi = new Button("π");
         butUndo = new Button("Undo");
-        butAns = new Button("Answer");
+        butAns = new Button("Prev. Answer");
 
+
+
+        // Initialize the Button array with the initialized buttons
         calcButtons = new Button[]{butSquare, butExp, butSqrt, butRt, butEX, butLog, butLN,
-                butCos, butSin, butTan, butOpenParen, butCloseParen, butVar, butDel, butClear,
+                butCos, butSin, butTan, butOpenParen, butCloseParen, butComma, butVar, butPi,
                 butSeven, butEight, butNine, butMultiply, butDivide, butFour, butFive, butSix,
-                butAdd, butSubtract, butOne, butTwo, butThree, butPi, butEquals, butZero, butDot, butComma, butUndo, butAns};
+                butAdd, butSubtract, butOne, butTwo, butThree, butDel, butClear, butZero, butDot, butEquals, butUndo, butAns};
 
+        // Return the array of Buttons
         return calcButtons;
-
     }
 
-
+    /*****************************************************************
+     Display the calculation that took place in the text area field
+     of the Calculator
+     *****************************************************************/
     public String displayExpression() {
+        // Obtain the user expression from the parser
         userInput = backEnd.getExpression();
 
+        // Check conditions, replace input for proper calculation
         if (userInput.contains("pi")) {
             userInput = userInput.replaceAll("pi", "π");
         }
@@ -622,6 +640,8 @@ public class Main extends Application {
         if(userInput.contains("cbrt")){
             userInput = userInput.replaceAll("cbrt", "∛");
         }
+
+        // Return the String object of the expression
         return userInput;
     }
 
@@ -629,7 +649,7 @@ public class Main extends Application {
      Function to add the calculator buttons to the Calculator Pane
      *****************************************************************/
     public void setupCalcButtons() {
-        // Setup the gridpane
+        // Setup the Calculator Buttons by initializing a GridPane
         calcButtonPane = new GridPane();
         calcButtonPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         calcButtonPane.setHgap(2.0);
@@ -642,23 +662,42 @@ public class Main extends Application {
         colWidth.setPercentWidth(20);
         calcButtonPane.setMaxHeight(Double.MAX_VALUE);
 
+        RowConstraints rowHeight = new RowConstraints();
+        rowHeight.setPercentHeight(100);
+        rowHeight.setVgrow(Priority.ALWAYS);
+
         // Add the column constraints to the gridpane
         calcButtonPane.getColumnConstraints().addAll(colWidth, colWidth, colWidth, colWidth, colWidth);
+        calcButtonPane.getRowConstraints().addAll(rowHeight, rowHeight, rowHeight, rowHeight, rowHeight, rowHeight, rowHeight);
+        //calcButtonPane.getRowConstraints().addAll(rowHeight, rowHeight, rowHeight);
 
         // Variables to track the current row / column
         int col;
         int row;
 
-
+        // Set the button functionality and style properties
         for(int bElement = 0; bElement < calcButtons.length; bElement++) {
             row = bElement / 5;
             col = bElement % 5;
 
-            calcButtons[bElement].setId("calc-button");
+
+            //calcButtons[bElement].setId("calc-button");
             calcButtons[bElement].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             calcButtonPane.add(calcButtons[bElement], col, row);
             calcButtonPane.setVgrow(calcButtons[bElement], Priority.ALWAYS);
             Button currentButton = calcButtons[bElement];
+            currentButton.setMaxHeight(Double.MAX_VALUE);
+            //currentButton.setPrefHeight(calcButtonPane.getHeight() / 7.0);
+
+            if(currentButton == butOne || currentButton == butTwo || currentButton == butThree || currentButton == butFour || currentButton == butFive || currentButton == butSix || currentButton == butSeven || currentButton == butEight || currentButton == butNine || currentButton == butZero || currentButton == butDot) {
+                currentButton.setId("numButton");
+            }
+            else if(currentButton == butEquals) {
+                currentButton.setId("equalsButton");
+            }
+            else {
+                currentButton.setId("calc-button");
+            }
 
             currentButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
@@ -671,6 +710,7 @@ public class Main extends Application {
 
                     if(source == butOne || source == butTwo || source == butThree || source == butFour || source == butFive || source == butSix || source == butSeven || source == butEight || source == butNine || source == butZero) {
                         backEnd.addToExpression("" + source.getText());
+                        currentButton.setId("numButton");
                     }
 
                     if (source == butSquare) {
@@ -819,7 +859,6 @@ public class Main extends Application {
                 }
             });
         }
-
     }
 
 }

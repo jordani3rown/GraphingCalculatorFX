@@ -109,9 +109,4 @@ public class Graph {
     public double getTickDistance() {
         return tickDistance;
     }
-
-
-
-
-
 }

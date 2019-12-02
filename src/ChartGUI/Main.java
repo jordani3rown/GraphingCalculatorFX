@@ -17,7 +17,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -142,7 +141,7 @@ public class Main extends Application {
             Scene scene  = new Scene(layout,1280,960);
 
             // Add the stylesheet to the scene
-            scene.getStylesheets().add("ChartGUI/bbgc.css");
+            scene.getStylesheets().add("ChartGUI/CalculatorStylesheet.css");
 
             // Initialize the Accordion
             functionMenu = new Accordion();

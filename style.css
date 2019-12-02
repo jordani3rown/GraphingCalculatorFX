@@ -1,0 +1,45 @@
+body {
+    background-color: #2E303E;
+    color: #f8f8ff;
+}
+
+h1 {
+    text-align: center;
+    color: #3FDAA4;
+}
+
+h2 {
+    text-align: left;
+    text-indent: 5%;
+    line-height: 1.45;
+    color: #3FDAA4;
+}
+
+h3 {
+    text-align: left;
+    line-height: 1.0;
+    color: #3FDAA4;
+}
+
+h4 {
+    text-align: left;
+    line-height: 1.0;
+    color: #3FDAA4;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height:auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+p {
+    line-height: normal;
+    margin-top: -20px;
+}
+
+#screenshots {
+    margin-top: 100px;
+}

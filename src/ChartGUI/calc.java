@@ -57,7 +57,10 @@ public class calc {
             }
         }
         if (in.equals("-")) {
-            if (expression.length() == 0 || (!Character.isDigit(expression.charAt(expression.length() - 1)) && expression.charAt(expression.length() - 1) != ')') || expression.length() == 0) {
+            if(expression.length() == 0){
+
+            }
+            else if (((expression.charAt(expression.length() - 1) != ')' && expression.charAt(expression.length() - 1) != '(') && !Character.isDigit(expression.charAt(expression.length() - 1)))) {
                 throw new IllegalArgumentException();
             }
         }
@@ -85,6 +88,11 @@ public class calc {
             }
         }
         if (in.equals("^2")) {
+            if (expression.length() == 0 || (!Character.isDigit(expression.charAt(expression.length() - 1)) && expression.charAt(expression.length() - 1) != ')') || expression.length() == 0) {
+                throw new IllegalArgumentException();
+            }
+        }
+        if(in.equals("!")){
             if (expression.length() == 0 || (!Character.isDigit(expression.charAt(expression.length() - 1)) && expression.charAt(expression.length() - 1) != ')') || expression.length() == 0) {
                 throw new IllegalArgumentException();
             }

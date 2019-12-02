@@ -9,7 +9,8 @@ public class calcTest {
     @Test
     public void intExpressions(){
         calc test = new calc();
-
+        test.addToExpression("5!");
+        assertEquals(120.0, test.evaluate(), 0.0001);
     }
 
     @Test

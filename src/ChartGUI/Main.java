@@ -134,6 +134,7 @@ public class Main extends Application {
     Button butUndo;
     Button butAns;
     Button butPoly;
+    Button butFact;
 
     calc backEnd;
     String userInput;
@@ -391,6 +392,7 @@ public class Main extends Application {
                             graphTableButton.setText("Table");
                         }
                     } else {
+                        layout.setCenter(lineChart);
                         return;
                     }
                 }
@@ -631,12 +633,13 @@ public class Main extends Application {
         butPi = new Button("π");
         butUndo = new Button("Undo");
         butAns = new Button("Answer");
-        butPoly = new Button("Quadratic");
+        butPoly = new Button("Quad");
+        butFact = new Button("!");
 
         calcButtons = new Button[]{butSquare, butExp, butSqrt, butRt, butEX, butLog, butLN,
                 butCos, butSin, butTan, butOpenParen, butCloseParen, butVar, butDel, butClear,
                 butSeven, butEight, butNine, butMultiply, butDivide, butFour, butFive, butSix,
-                butAdd, butSubtract, butOne, butTwo, butThree, butPi, butEquals, butZero, butDot, butComma, butUndo, butAns, butPoly};
+                butAdd, butSubtract, butOne, butTwo, butThree, butPi, butEquals, butZero, butDot, butComma, butUndo, butAns, butPoly, butFact};
 
         return calcButtons;
 
@@ -867,6 +870,16 @@ public class Main extends Application {
                     }
                     if(source == butPoly){
                         polyRoot();
+                    }
+                    if(source == butFact){
+                        try {
+                            backEnd.addToExpression("!");
+                        } catch (IllegalArgumentException b) {
+                            alert.setHeaderText("Error in Factorial Operation");
+                            alert.setContentText("Syntax: Number must precede factorial operator");
+                            alert.showAndWait();
+                            return;
+                        }
                     }
                     // need to clear before appending the updated expression
                     expressionInput.clear();

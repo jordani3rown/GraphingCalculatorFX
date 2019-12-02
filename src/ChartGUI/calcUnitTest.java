@@ -74,6 +74,7 @@ public class calcUnitTest {
     @Test(expected = IllegalArgumentException.class)
     public void minThrows(){
         calc temp = new calc();
+        temp.addToExpression("+");
         temp.addToExpression("-");
     }
 

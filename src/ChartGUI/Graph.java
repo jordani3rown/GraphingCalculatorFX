@@ -37,7 +37,7 @@ public class Graph {
         setYMin(-20.0);
         setYMax(20.0);
         // Set the distance between hash marks
-        setTickDistance(0.5);
+        setTickDistance(1.0);
     }
 
     /*****************************************************************

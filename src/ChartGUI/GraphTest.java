@@ -2,8 +2,13 @@ package ChartGUI;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+/*****************************************************************
+ Class that contains the unit-testing for the Graph class.
+ @author    Jordan Brown, Jacob Rodriguez, Cade Snuffer
+ @version   1.0
+ *****************************************************************/
 public class GraphTest {
 
     @Test

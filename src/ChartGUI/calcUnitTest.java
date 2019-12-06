@@ -1,10 +1,14 @@
 package ChartGUI;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+/*****************************************************************
+ Class for the unit-testing of the calc class.
+ @author    Jordan Brown, Jacob Rodriguez, Cade Snuffer
+ @version   1.0
+ *****************************************************************/
 public class calcUnitTest {
 
     @Test
@@ -36,50 +40,50 @@ public class calcUnitTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void nanThrows(){
+    public void nanThrows() {
         calc temp = new calc();
         temp.addToExpression("NaN");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void squareThrows(){
+    public void squareThrows() {
         calc temp = new calc();
         temp.addToExpression("^2");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void expThrows(){
+    public void expThrows() {
         calc temp = new calc();
         temp.addToExpression("^");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void dotThrows(){
+    public void dotThrows() {
         calc temp = new calc();
         temp.addToExpression(".");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void multThrows(){
+    public void multThrows() {
         calc temp = new calc();
         temp.addToExpression("*");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void divThrows(){
+    public void divThrows() {
         calc temp = new calc();
         temp.addToExpression("/");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void minThrows(){
+    public void minThrows() {
         calc temp = new calc();
         temp.addToExpression("+");
         temp.addToExpression("-");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void addThrows(){
+    public void addThrows() {
         calc temp = new calc();
         temp.addToExpression("+");
     }
@@ -139,31 +143,31 @@ public class calcUnitTest {
         assertEquals(0.0, temp.getPrevResult(), 0.0001);
         temp.addToExpression("15*(15)+cos(pi)");
         temp.evaluate();
-        assertEquals(224.0, temp.getPrevResult(),0.0001);
-        assertEquals(0.0, temp.getPrevResult(),0.0001);
+        assertEquals(224.0, temp.getPrevResult(), 0.0001);
+        assertEquals(0.0, temp.getPrevResult(), 0.0001);
         temp.clear();
         temp.addToExpression("15*2*(3-5)+ln(2)");
         temp.evaluate();
         temp.clear();
         temp.addToExpression("30/2");
         temp.evaluate();
-        assertEquals(15.0, temp.getPrevResult(),0.0001);
-        assertEquals(-59.30685, temp.getPrevResult(),0.0001);
-        assertEquals(0.0, temp.getPrevResult(),0.0001);
+        assertEquals(15.0, temp.getPrevResult(), 0.0001);
+        assertEquals(-59.30685, temp.getPrevResult(), 0.0001);
+        assertEquals(0.0, temp.getPrevResult(), 0.0001);
     }
 
     @Test
     public void polySolve() {
         calc temp = new calc();
-        assertEquals("x = 3.0\nx = -2.0", temp.polySolve(1,-1,-6));
-        assertEquals("x = -1.0\nx = -6.0", temp.polySolve(1,7,6));
-        assertEquals("x = -2.0 + i(1.0)\nx = -2.0 - i(1.0)", temp.polySolve(1,4,5));
+        assertEquals("x = 3.0\nx = -2.0", temp.polySolve(1, -1, -6));
+        assertEquals("x = -1.0\nx = -6.0", temp.polySolve(1, 7, 6));
+        assertEquals("x = -2.0 + i(1.0)\nx = -2.0 - i(1.0)", temp.polySolve(1,  4, 5));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void polyThrows(){
+    public void polyThrows() {
         calc temp = new calc();
-        temp.polySolve(0,3,4);
+        temp.polySolve(0, 3, 4);
     }
 
     @Test
@@ -174,5 +178,14 @@ public class calcUnitTest {
         temp.storeInVar();
         assertEquals("2500+26.809*(29/2)", temp.getExpression());
         assertEquals("2500+26.809*(29/2)", temp.getStored());
+    }
+
+    @Test
+    public void getCurrentAns() {
+        calc temp = new calc();
+        assertEquals(0.0, temp.getCurrentAns(), 0.0001);
+        temp.addToExpression("4+4");
+        temp.evaluate();
+        assertEquals(8.0, temp.getCurrentAns(), 0.0001);
     }
 }

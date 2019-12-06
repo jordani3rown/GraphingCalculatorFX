@@ -1,0 +1,49 @@
+SCIENTIFIC CALCULATOR SYNTAX
+
+Natural Log (LN)
+CORRECT SYNTAX:
+LN(x)
+INCORRECT SYNTAX:
+LN x
+
+Square (^2)
+CORRECT SYNTAX:
+x^2, (x+x)^2, x^(2)
+
+Exponentiation (^)
+CORRECT SYNTAX:
+5^x, (5+2)^x, 5^(x)
+
+Square Root (√)
+CORRECT SYNTAX:
+√(x)
+INCORRECT SYNTAX:
+√x
+
+Cube root (∛)
+CORRECT SYNTAX:
+∛(x)
+INCORRECT SYNTAX:
+∛x
+
+Special character e (e^)
+CORRECT SYNTAX:
+e^x, e^(x), e^(x+x)
+
+Log base 10 (log())
+CORRECT SYNTAX:
+log(x)
+INCORRECT SYNTAX:
+log x
+
+Trig functions (cos())
+CORRECT SYNTAX:
+cos(x), sin(x), tan(x)
+INCORRECT SYNTAX:
+cos x, sin x, tan x
+
+Operators (+, -, *, /)
+CORRECT SYNTAX:
+x+x, (x)+(x), x*(x+x)
+INCORRECT SYNTAX:
+x(x+x)

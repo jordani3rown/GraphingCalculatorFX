@@ -1,25 +1,29 @@
 package ChartGUI;
 
 /*****************************************************************
- Graph Class that contains the logic of a graph that will be displayed
+ Graph Class that contains the logic of a graph that will be displayed.
  @author    Jordan Brown, Jacob Rodriguez, Cade Snuffer
  @version   1.0
  *****************************************************************/
 public class Graph {
 
-    /** min and max values for the x and y axes */
+    /** Minimum value for X. */
     private double xMin;
+
+    /** Maximum value for X. */
     private double xMax;
+
+    /** Minimum value for Y. */
     private double yMin;
+
+    /** Maximum value for Y. */
     private double yMax;
 
-    /** double that contains the length of each hash mark */
+    /** double that contains the length of each hash mark. */
     private double tickDistance;
 
-    private Graph graph;
-
     /*****************************************************************
-     Default constructor which sets the initial state of the graph
+     Default constructor which sets the initial state of the graph.
      *****************************************************************/
     public Graph() {
         // Set each axis min and max values to those in the setAxes method
@@ -27,7 +31,7 @@ public class Graph {
     }
 
     /*****************************************************************
-     Method that sets the initial values for the graph components
+     Method that sets the initial values for the graph components.
      *****************************************************************/
     public void setAxes() {
         // Set the min and max values of the x axis
@@ -41,63 +45,63 @@ public class Graph {
     }
 
     /*****************************************************************
-     Sets the smallest x value contained on the x axis
+     Sets the smallest x value contained on the x axis.
      *****************************************************************/
     public void setXMin(double xMin) {
         this.xMin = xMin;
     }
 
     /*****************************************************************
-     Sets the largest x value contained on the x axis
+     Sets the largest x value contained on the x axis.
      *****************************************************************/
-    public void setXMax( double xMax) {
+    public void setXMax(double xMax) {
         this.xMax = xMax;
     }
 
     /*****************************************************************
-     Sets the smallest y value contained on the y axis
+     Sets the smallest y value contained on the y axis.
      *****************************************************************/
     public void setYMin(double yMin) {
         this.yMin = yMin;
     }
 
     /*****************************************************************
-     Sets the largest y value contained on the y axis
+     Sets the largest y value contained on the y axis.
      *****************************************************************/
-    public void setYMax( double yMax) {
+    public void setYMax(double yMax) {
         this.yMax = yMax;
     }
 
     /*****************************************************************
-     Sets the distance between each hash mark
+     Sets the distance between each hash mark.
      *****************************************************************/
     public void setTickDistance(double tickDistance) {
         this.tickDistance = tickDistance;
     }
 
     /*****************************************************************
-     Returns the smallest x value contained on the x axis
+     Returns the smallest x value contained on the x axis.
      *****************************************************************/
     public double getXMin() {
         return xMin;
     }
 
     /*****************************************************************
-     Returns the largest x value contained on the x axis
+     Returns the largest x value contained on the x axis.
      *****************************************************************/
     public double getXMax() {
         return xMax;
     }
 
     /*****************************************************************
-     Returns the smallest y value contained on the y axis
+     Returns the smallest y value contained on the y axis.
      *****************************************************************/
     public double getYMin() {
         return yMin;
     }
 
     /*****************************************************************
-     Returns the largest y value contained on the y axis
+     Returns the largest y value contained on the y axis.
      *****************************************************************/
     public double getYMax() {
         return yMax;
@@ -106,9 +110,4 @@ public class Graph {
     public double getTickDistance() {
         return tickDistance;
     }
-
-
-
-
-
 }

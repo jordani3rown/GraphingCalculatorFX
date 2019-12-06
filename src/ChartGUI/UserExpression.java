@@ -2,6 +2,9 @@ package ChartGUI;
 
 import javafx.scene.chart.XYChart;
 
+/**
+ *
+ */
 public class UserExpression {
     /** */
     public int expressionID;

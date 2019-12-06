@@ -1,0 +1,190 @@
+@font-face {
+    -src: url('../../../IdeaProjects/byRon-calc/src/fonts/AnonymousPro-Regular.ttf');
+}
+
+.root {
+    -fx-font-family: 'Anonymous Pro';
+    -fx-font-size: 14;
+    -fx-focus-color: transparent;
+    /*-fx-faint-focus-color: #3FDAA4;*/
+}
+
+.titled-pane {
+    /*-fx-effect: dropshadow(three-pass-box, #9F9F9F, 5, 0, 5, 0);*/
+    -fx-animated: true;
+    -fx-text-fill: #f8f8ff;
+    -fx-border-color: #2E303E;
+}
+
+.titled-pane > .title  {
+    -fx-background-radius: 0, 0, 0;
+    -fx-border-color: #3FDAA4;
+
+    /* stop the background from being blue on focus */
+    -fx-background-color: #2E303E;
+}
+
+.titled-pane > .title:hover {
+    -fx-font-weight: bold;
+}
+
+.titled-pane:expanded > .title:hover {
+    -fx-background-color: linear-gradient(to bottom right, #2E303E 1%, #424451);
+}
+
+.titled-pane > .title >  .arrow-button .arrow:hover {
+    -fx-translate-y: 5;
+}
+
+.titled-pane:focused > .title > .arrow-button > .arrow {
+    -fx-mark-color: #2E303E;
+    -fx-border-color: #3FDAA4;
+    -fx-border-width: 1;
+    /*-fx-scale-y: -8;*/
+}
+
+.titled-pane:collapsed > .title {
+    -fx-background-color: #3FDAA4;
+}
+
+.titled-pane:collapsed {
+    -fx-text-fill: #2E303E;
+    -fx-border-color: #3FDAA4;
+}
+
+.titled-pane:collapsed > .title:hover {
+    -fx-font-weight: bold;
+    -fx-background-color: #65e1b6;
+}
+
+.titled-pane > .content {
+    -fx-border-color: #3FDAA4;
+}
+
+#topNav {
+    -fx-border-color: #3FDAA4;
+}
+
+#expression-panel {
+    -fx-background-color: #2E303E;
+}
+
+#expressionID {
+    -fx-text-fill: #f8f8ff;
+}
+
+
+.topButton {
+    -fx-background-color: #2E303E;
+    -fx-background-radius: 0, 0, 0;
+    -fx-border-color: #3FDAA4;
+    -fx-text-fill: #3FDAA4;
+    -fx-font-size: 14;
+    -fx-base: #3FDAA4;
+}
+
+.topButton:hover {
+    -fx-font-weight: bold;
+    -fx-background-color: linear-gradient(to bottom right, #2E303E 1%, #424451);
+}
+
+.topButton:selected {
+    -fx-background-color: #3FDAA4;
+    -fx-text-fill: #1C1E26;
+    -fx-scale-y: 1;
+}
+
+.topButton:selected:hover {
+    -fx-background-color: #65e1b6;
+}
+
+#addButton {
+    -fx-background-color: #2E303E;
+    -fx-border-color: #3FDAA4;
+    -fx-text-fill: #3FDAA4;
+    -fx-translate-y: 10;
+    -fx-font-size: 18;
+}
+
+#addButton:hover {
+    -fx-background-color: linear-gradient(to bottom right, #2E303E 10%, #424451);;
+}
+
+#addButton:hover > .text {
+    -fx-font-weight: bolder;
+}
+
+#settingsButton {
+    -fx-background-color: #2E303E;
+    -fx-border-color: #3FDAA4;
+    -fx-text-fill: #3FDAA4;
+    -fx-translate-y: 10;
+    -fx-font-size: 18;
+}
+
+#settingsButton:hover {
+    -fx-background-color: linear-gradient(to bottom right, #2E303E 10%, #424451);;
+}
+
+#settingsButton:hover > .text {
+    -fx-font-weight: bolder;
+}
+
+#calc-button {
+    -fx-background-color: linear-gradient(to bottom right, #292b37 1%, #2E303E);
+    -fx-text-fill: #f8f8ff;
+    -fx-font-size: 18;
+}
+
+#calc-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #2E303E 10%, #424451);
+}
+
+#calc-button:pressed {
+    -fx-effect: dropshadow(three-pass-box, #3FDAA4, 3, 3, 1, 1);
+    -fx-background-color: linear-gradient(to bottom right, #2E303E 10%, #424451);
+    -fx-font-weight: bold;
+}
+
+#calculator-container {
+    -fx-background-color: #3FDAA4;
+}
+
+#numButton {
+    -fx-background-color: linear-gradient(to bottom right, #2E303E 1%, #424451);
+    -fx-text-fill: #f8f8ff;
+    -fx-font-size: 18;
+}
+
+#numButton:hover {
+    -fx-background-color: linear-gradient(to bottom right, #424451 10%, #575964);
+}
+
+#numButton:pressed {
+    -fx-effect: dropshadow(three-pass-box, #3FDAA4, 3, 3, 1, 1);
+    -fx-background-color: linear-gradient(to bottom right, #424451 10%, #575964);
+    -fx-font-weight: bold;
+}
+
+#equalsButton {
+    -fx-background-color: linear-gradient(to bottom right, #32ae83 5%, #3FDAA4);
+    -fx-text-fill: #2E303E;
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+}
+
+#equalsButton:hover {
+    -fx-background-color: linear-gradient(to bottom right, #3FDAA4 10%, #65e1b6);
+}
+
+#equalsButton:pressed {
+    -fx-effect: dropshadow(three-pass-box, #2E303E, 3, 3, 1, 1);
+    -fx-background-color: linear-gradient(to bottom right, #3FDAA4 10%, #65e1b6);
+    -fx-font-size: 19;
+}
+
+.text-area {
+    -fx-background-color: #e8e8ec;
+    -fx-font-size: 18;
+    -fx-font-weight: bolder;
+}
